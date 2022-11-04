@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import { Route, Routes } from "react-router-dom";
+import Form from "./Components/Form/Form";
+import Login from "./Components/Login/Login";
+import HomeUser from "./Components/authUserRoutes/HomeUser";
+import { Box } from '@chakra-ui/react';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<Box className="App">
+			<Routes>
+				<Route path="/user" element={<HomeUser />}>
+					<Route path="form" element={<Form />} />
+				</Route>
+				<Route exact path="/" element={<Login />} />
+				{/* <Route exact path="/form" element={<Form />} /> */}
+			</Routes>
+		</Box>
+	);
 }
 
 export default App;
