@@ -10,6 +10,7 @@ import Oficina from "../FormPages/Oficina";
 import Taller from "../FormPages/Taller";
 import { Box, Button, Text } from "@chakra-ui/react";
 
+const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.signature;
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -17,8 +18,7 @@ const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 
 const Form = () => {
 	const [page, setPage] = useState(0);
-	console.log("page:", page);
-
+	const [loading, setLoading] = useState(false);
 	const [filestToTransform, setFilestToTransform] = useState({
 		CasaPrincipal: {},
 		ExAgroinsumos: {},
@@ -27,13 +27,13 @@ const Form = () => {
 		Oficina: {},
 		Balanza: {},
 	});
-	//// console.log("filestToTransform:", filestToTransform);
+
 	const [formData, setFormData] = useState({
 		CasaPrincipal: {
 			RackPrincipalLimpieza: "",
 			RackPrincipalOrden: "",
 			FuncionamientoAP: "",
-			FuncionamientoTeléfono: "",
+			FuncionamientoTelefono: "",
 			UPS: "",
 		},
 		ExAgroinsumos: {
@@ -73,9 +73,9 @@ const Form = () => {
 			ChequearVisualizacion: "",
 		},
 	});
-	//// console.log("formData:", formData);
 
 	const apploadImage = async () => {
+		let stateFormCopy = { ...formData };
 		for (const key in filestToTransform) {
 			for (const subKey in filestToTransform[key]) {
 				const data = new FormData();
@@ -83,22 +83,24 @@ const Form = () => {
 				data.append("api_key", process.env.REACT_APP_CLOUD_API_KEY);
 				data.append("signature", signature);
 				data.append("timestamp", timestamp);
-				console.log("data", data);
 
 				const cloudinaryResponse = await axios.post(
-					`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/auto/upload`,
+					`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`,
 					data,
 					{
 						headers: { "Content-Type": "multipart/form-data" },
 					}
 				);
-				console.log(
-					"cloudinaryResponse.data",
-					cloudinaryResponse.data.secure_url
-				);
-				// return cloudinaryResponse.data;
+				stateFormCopy = {
+					...stateFormCopy,
+					[key]: {
+						...stateFormCopy[key],
+						[subKey]: cloudinaryResponse.data.secure_url,
+					},
+				};
 			}
 		}
+		return stateFormCopy;
 	};
 
 	const FormTitles = [
@@ -176,10 +178,67 @@ const Form = () => {
 		},
 	];
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		alert("seguro quiere enviar el formulario");
-		apploadImage();
+	const handleSubmit = async () => {
+		if (
+			window.confirm(
+				"Are you sure you want to save this thing into the database?"
+			)
+		) {
+			setLoading(true);
+			let result = await apploadImage();
+			await axios.post("http://localhost:8080/userForm/form", result, {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			setFormData({
+				CasaPrincipal: {
+					RackPrincipalLimpieza: "",
+					RackPrincipalOrden: "",
+					FuncionamientoAP: "",
+					FuncionamientoTelefono: "",
+					UPS: "",
+				},
+				ExAgroinsumos: {
+					RackPrincipalLimpieza: "",
+					RackPrincipalOrden: "",
+					FuncionamientoAP: "",
+				},
+				Taller: {
+					RackPrincipalLimpieza: "",
+					RackPrincipalOrden: "",
+					FuncionamientoTelefono: "",
+					FuncionamientoAP: "",
+				},
+				Hangar: {
+					RackPrincipalLimpieza: "",
+					RackPrincipalOrden: "",
+					FuncionamientoTelefono: "",
+					FuncionamientoAP: "",
+				},
+				Oficina: {
+					FuncionamientoTelefono: "",
+					LimpiarPC: "",
+					AcomodarCables: "",
+				},
+				Balanza: {
+					RackPrincipalLimpieza: "",
+					RackPrincipalOrden: "",
+					FuncionamientoAP: "",
+					LimpiarPC: "",
+					UPS: "",
+					FuncionamientoTelefono: "",
+				},
+				Agroinsumos: {
+					FuncionamientoAP: "",
+				},
+				Camaras: {
+					ChequearVisualizacion: "",
+				},
+			});
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -187,39 +246,38 @@ const Form = () => {
 			<Text fontSize="30px" fontWeight="bold">
 				{FormTitles[page].title}
 			</Text>
-			<form onSubmit={handleSubmit}>
-				<Box mt="20px" textAlign="center">
-					<Button
-						mr="10px"
-						w="150px"
-						bg="#636bc5"
-						color="white"
-						_hover={{ bg: "#636bc5" }}
-						disabled={page === 0}
-						onClick={() => {
-							setPage((currPage) => currPage - 1);
-						}}
-					>
-						Prev
-					</Button>
-					<Button
-						mx="10px"
-						w="150px"
-						bg="#636bc5"
-						color="white"
-						_hover={{ bg: "#636bc5" }}
-						onClick={() => {
-							if (page < FormTitles.length - 1) {
-								setPage((currPage) => currPage + 1);
-							}
-						}}
-						type={page === FormTitles.length - 1 ? "submit" : "button"}
-					>
-						{page === FormTitles.length - 1 ? "Submit" : "Next"}
-					</Button>
-				</Box>
-				{FormTitles[page].component}
-			</form>
+			<Box mt="20px" textAlign="center">
+				<Button
+					mr="10px"
+					w="150px"
+					bg="#636bc5"
+					color="white"
+					_hover={{ bg: "#636bc5" }}
+					disabled={page === 0}
+					onClick={() => {
+						setPage((currPage) => currPage - 1);
+					}}
+				>
+					Prev
+				</Button>
+				<Button
+					mx="10px"
+					w="150px"
+					bg="#636bc5"
+					color="white"
+					_hover={{ bg: "#636bc5" }}
+					onClick={() => {
+						if (page < FormTitles.length - 1) {
+							setPage((currPage) => currPage + 1);
+						} else {
+							handleSubmit();
+						}
+					}}
+				>
+					{page === FormTitles.length - 1 ? "Submit" : "Next"}
+				</Button>
+			</Box>
+			{loading ? <h1>Cargando..</h1> : FormTitles[page].component}
 		</Box>
 	);
 };

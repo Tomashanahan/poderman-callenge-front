@@ -95,7 +95,7 @@ function CasaPrincipal({
 						...lastFormValues,
 						CasaPrincipal: {
 							...lastFormValues.CasaPrincipal,
-							FuncionamientoTeléfono: e.target.value,
+							FuncionamientoTelefono: e.target.value,
 						},
 					}))
 				}
