@@ -3,6 +3,7 @@ import { Box, Button, Flex, Image, Select, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { AiFillEdit } from "react-icons/ai";
 import FormModal from "../FormModal/FormModal";
+import CountdownTimer from "../Counter/CountDownTimer";
 
 function UserHome() {
 	const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -111,16 +112,7 @@ function UserHome() {
 			{showModal && (
 				<FormModal formToShow={formSelected} clouseModal={setShowModal} />
 			)}
-			<Button
-				bg={"blue.400"}
-				color={"white"}
-				_hover={{
-					bg: "blue.500",
-				}}
-				mb="40px"
-			>
-				Crear una nueva visita // Cerrar visita
-			</Button>
+			<CountdownTimer />
 			<Box>
 				<Text fontWeight="extrabold" mb="20px" fontSize="30px">
 					Visita Existente
