@@ -9,9 +9,10 @@ import {
 	Button,
 	Heading,
 	useColorModeValue,
+	Text,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
 	const navigation = useNavigate();
@@ -19,7 +20,6 @@ export default function Login() {
 		email: "",
 		password: "",
 	});
-	const [response, setResponse] = useState([]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -33,16 +33,21 @@ export default function Login() {
 					password: inputValues.password,
 				}
 			);
-			setResponse(info.data);
 			localStorage.setItem("userInfo", JSON.stringify(info.data));
 			localStorage.setItem("token", JSON.stringify(info.data.token));
-			navigation("/user/form");
+
+			if (info.data.team === "Admin") {
+				navigation("/admin/dashboard");
+			} else if (
+				info.data.team === "Microinformatica" ||
+				info.data.team === "Telecomunicaciones"
+			) {
+				navigation("/user");
+			}
 		} catch (error) {
 			console.log("error:", error);
 		}
 	};
-
-	console.log("response:", response);
 
 	return (
 		<Flex
@@ -74,7 +79,7 @@ export default function Login() {
 								/>
 							</FormControl>
 							<FormControl id="password">
-								<FormLabel>Password</FormLabel>
+								<FormLabel>Contraseña</FormLabel>
 								<Input
 									value={inputValues.password}
 									onChange={(e) =>
@@ -83,6 +88,16 @@ export default function Login() {
 									type="password"
 								/>
 							</FormControl>
+							<Stack pt={6}>
+								<Text align={"center"}>
+									No tienes cuenta?{" "}
+									<Link to="/register">
+										<Box as="span" color={"blue.400"}>
+											Crear cuenta
+										</Box>
+									</Link>
+								</Text>
+							</Stack>
 							<Stack spacing={10}>
 								<Button
 									bg={"blue.400"}
@@ -92,7 +107,7 @@ export default function Login() {
 										bg: "blue.500",
 									}}
 								>
-									Sign in
+									Iniciar Sesion
 								</Button>
 							</Stack>
 						</Stack>

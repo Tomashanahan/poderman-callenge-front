@@ -7,9 +7,7 @@ const HomeUser = () => {
 	return (
 		<>
 			{userInfo !== null || token !== null ? (
-				<main className="conteiner mx-auto mt-20">
 					<Outlet />
-				</main>
 			) : (
 				<Navigate to="/" />
 			)}
