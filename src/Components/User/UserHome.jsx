@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Box, Button, Flex, Image, Select, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { AiFillEdit } from "react-icons/ai";
@@ -8,11 +8,80 @@ import CountdownTimer from "../Counter/CountDownTimer";
 function UserHome() {
 	const user = JSON.parse(localStorage.getItem("userInfo"));
 	const token = JSON.parse(localStorage.getItem("token"));
-	const [allUserVisitsInfo, setAllUserVisitsInfo] = useState([]);
+	// const [allUserVisitsInfo, setAllUserVisitsInfo] = useState({});
+	const [allUserVisitsInfo, setAllUserVisitsInfo] = useState({
+    "casaPrincipal": {
+        "id": 23,
+        "preference_id": null,
+        "RackPrincipalLimpieza": "https://res.cloudinary.com/dh9f1aicj/image/upload/v1668105054/r7cbjcnoy3u44bgraxxk.jpg",
+        "RackPrincipalOrden": "https://res.cloudinary.com/dh9f1aicj/image/upload/v1668106402/yueysjutrmu5meejza1s.png",
+        "FuncionamientoAP": "No",
+        "FuncionamientoTelefono": "No",
+        "UPS": "No",
+        "createdAt": "2022-11-10T20:20:07.001Z",
+        "updatedAt": "2022-11-10T20:20:07.039Z",
+        "UserId": 1
+    },
+    "exAgroinsumos": {
+        "id": 18,
+        "preference_id": null,
+        "RackPrincipalLimpieza": "https://res.cloudinary.com/dh9f1aicj/image/upload/v1668105669/dgwcvz1jmeikc1gzyhlq.jpg",
+        "RackPrincipalOrden": "https://res.cloudinary.com/dh9f1aicj/image/upload/v1668105670/wuit9ryiiczylnfivkus.png",
+        "FuncionamientoAP": "No",
+        "createdAt": "2022-11-10T19:49:58.810Z",
+        "updatedAt": "2022-11-10T19:49:58.822Z",
+        "UserId": 1
+    },
+    "taller": {
+        "id": 14,
+        "preference_id": null,
+        "RackPrincipalLimpieza": "https://res.cloudinary.com/dh9f1aicj/image/upload/v1668108460/mqnii2dk2r4dwmm1rbwo.png",
+        "RackPrincipalOrden": "https://res.cloudinary.com/dh9f1aicj/image/upload/v1668108461/dm8czdjr1kisxu3jqtfh.jpg",
+        "FuncionamientoTelefono": "No",
+        "FuncionamientoAP": "Si",
+        "createdAt": "2022-11-10T19:44:26.411Z",
+        "updatedAt": "2022-11-10T19:44:26.455Z",
+        "UserId": 1
+    }
+});
 	const [formSelected, setformSelected] = useState("");
+	const [thisIsAFormToEdit, setThisIsAFormToEdit] = useState(false);
 	const [showModal, setShowModal] = useState(false);
+	const [allInfoToRender, setAllInfoToRender] = useState([]);
 
-	useEffect(() => {
+	const updateAllInfoToRender = useCallback(() =>{
+		const result = Object.entries(allUserVisitsInfo)?.map(([key, visitInfo]) => Object.entries(visitInfo).filter(([key]) =>
+		!["id", "preference_id", "updatedAt", "UserId"].includes(
+			key
+		)
+	).map(([key, value])=> {
+		if (key === "createdAt"){
+			return <></>;
+		}
+		return value?.startsWith("https://") ? (
+			<Flex align="center" gap="20px" justify="space-between">
+				<Text key={visitInfo.createdAt}>{key}</Text>
+				<Image
+					src={value}
+					w="150px"
+					h="100px"
+					borderRadius="8px"
+					objectFit={"contain"}
+				/>
+			</Flex>
+		) : (
+			<Text key={visitInfo.createdAt}>
+				{key.replace(/([a-z0-9])([A-Z])/g, "$1 $2")}:{" "}
+				<Text as="span" fontWeight="extrabold">
+					{value}
+				</Text>
+			</Text>
+		);
+		}));
+		setAllInfoToRender(result);
+	},[allUserVisitsInfo])
+
+	const getAllVisitedInfo = () => {
 		axios("http://localhost:8080/userForm", {
 			headers: {
 				"Content-Type": "application/json",
@@ -20,42 +89,55 @@ function UserHome() {
 			},
 			body: user,
 		}).then((res) => setAllUserVisitsInfo(res.data));
-	}, []);
-
-	const iterateCategoriesKeys = (object) => {
-		let storeAllTheKeys = [];
-		for (const key in object) {
-			if (object[key] === null) {
-				continue;
-			}
-			if (
-				key !== "id" &&
-				key !== "preference_id" &&
-				key !== "createdAt" &&
-				key !== "updatedAt" &&
-				key !== "UserId"
-			) {
-				storeAllTheKeys.push(
-					object[key]?.startsWith("https://") ? (
-						<Flex align="center" gap="20px" justify="space-between">
-							<Text key={object.createdAt}>{key}</Text>
-							<Image src={object[key]} w="150px" h="100px" borderRadius="8px"  objectFit={'contain'} />
-						</Flex>
-					) : (
-						<Text key={object.createdAt}>
-							{key.replace(/([a-z0-9])([A-Z])/g, "$1 $2")}: <Text as="span" fontWeight="extrabold">{object[key]}</Text>
-						</Text>
-					)
-				);
-			}
-		}
-		return storeAllTheKeys;
 	};
+
+	// useEffect(() => {
+	// 	getAllVisitedInfo();
+	// }, []);
+
+	useEffect(()=> {
+		updateAllInfoToRender()
+	}, [allUserVisitsInfo])
+
+	// const iterateCategoriesKeys = (object) => {
+	// 	return Object.entries(object)
+	// 		.filter(([key, value]) =>
+	// 			!["id", "preference_id", "updatedAt", "UserId"].includes(
+	// 				key
+	// 			)
+	// 		)
+	// 		.map(([key, value]) => {
+	// 			if (key === "createdAt"){
+	// 				return <></>;
+	// 			}
+	// 			return value?.startsWith("https://") ? (
+	// 				<Flex align="center" gap="20px" justify="space-between">
+	// 					<Text key={object.createdAt}>{key}</Text>
+	// 					<Image
+	// 						src={value}
+	// 						w="150px"
+	// 						h="100px"
+	// 						borderRadius="8px"
+	// 						objectFit={"contain"}
+	// 					/>
+	// 				</Flex>
+	// 			) : (
+	// 				<Text key={object.createdAt}>
+	// 					{key.replace(/([a-z0-9])([A-Z])/g, "$1 $2")}:{" "}
+	// 					<Text as="span" fontWeight="extrabold">
+	// 						{value}
+	// 					</Text>
+	// 				</Text>
+	// 			);
+	// 			// }
+	// 		});
+	// };
+
 	const mapAllInfoVisit = () => {
 		if (Object.keys(allUserVisitsInfo).length > 0) {
-			let storeAllTheVisitsInformation = [];
-			for (const key in allUserVisitsInfo) {
-				storeAllTheVisitsInformation.push(
+			console.log("allUserVisitsInfo:", allUserVisitsInfo);
+			const storeAllTheVisitsInformation = Object.entries(allUserVisitsInfo).map(
+				([key, value]) => (
 					<Box key={key}>
 						<Flex
 							justify="space-between"
@@ -73,14 +155,23 @@ function UserHome() {
 							>
 								{key.replace(/([a-z0-9])([A-Z])/g, "$1 $2")}
 							</Text>
-							<Box fontSize="20px" cursor="pointer">
+							<Box
+								fontSize="20px"
+								cursor="pointer"
+								onClick={() => {
+									setformSelected(key);
+									setThisIsAFormToEdit(true);
+									setShowModal(true);
+								}}
+							>
 								<AiFillEdit />
 							</Box>
 						</Flex>
-						<Box ml="10px">{iterateCategoriesKeys(allUserVisitsInfo[key])}</Box>
+						<Box ml="10px">{allInfoToRender.map(elem => elem)}</Box>
 					</Box>
-				);
-			}
+				)
+			);
+
 			return storeAllTheVisitsInformation;
 		} else {
 			return (
@@ -113,7 +204,13 @@ function UserHome() {
 	return (
 		<Box w="60%" m="auto" my="40px" minH="600px">
 			{showModal && (
-				<FormModal formToShow={formSelected} clouseModal={setShowModal} />
+				<FormModal
+					getAllVisitedInfo={getAllVisitedInfo}
+					setShowModal={setShowModal}
+					formToShow={formSelected}
+					clouseModal={setShowModal}
+					thisIsAFormToEdit={thisIsAFormToEdit}
+				/>
 			)}
 			<CountdownTimer />
 			<Box>
@@ -131,7 +228,9 @@ function UserHome() {
 							}}
 						>
 							{calcValuesToComplete()?.map((element) => (
-								<option value={element}>{element.replace(/([a-z0-9])([A-Z])/g, '$1 $2')}</option>
+								<option value={element}>
+									{element.replace(/([a-z0-9])([A-Z])/g, "$1 $2")}
+								</option>
 							))}
 						</Select>
 						<Button
@@ -142,6 +241,7 @@ function UserHome() {
 							}}
 							onClick={() => {
 								setShowModal(formSelected !== "" && true);
+								setThisIsAFormToEdit(false);
 							}}
 						>
 							Completar

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import FormSelectFile from "../Commons/FormSelectFile";
+import FormSelectOption from "../Commons/FormSelectOption";
 
 const token = JSON.parse(localStorage.getItem("token"));
 
@@ -47,12 +47,10 @@ function Camaras() {
 			<FormLabel mt="20px" fontWeight="bold">
 				Chequear visualizacion
 			</FormLabel>
-			<FormSelectFile
-				setFormData={setFormData}
-				setFormErrors={setFormErrors}
-				formDataKeyName="Camaras"
-				formDataSubKeyName="ChequearVisualizacion"
-			/>
+			<FormSelectOption formData={formData}
+			setFormData={setFormData}
+			setFormErrors={setFormErrors}
+			formDataKeyName="Camaras" formDataSubKeyName="ChequearVisualizacion" />
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

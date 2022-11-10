@@ -1,7 +1,9 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
-import { useState } from "react";
-import FormSelectFile from "../Commons/FormSelectFile";
+import { useEffect, useState } from "react";
+import FormSelectOption from "../Commons/FormSelectOption";
+import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
+import EditImageFileForm from "../Commons/EditImageFileForm";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -9,11 +11,14 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function Taller() {
+function Taller({ thisIsAFormToEdit }) {
 	const [loading, setLoading] = useState(false);
 	const [filestToTransform, setFilestToTransform] = useState({ Taller: {} });
 	const [formErrors, setFormErrors] = useState("");
-
+	const [editImage, setEditImage] = useState({
+		RackPrincipalLimpieza: false,
+		RackPrincipalOrden: false,
+	});
 	const [formData, setFormData] = useState({
 		Taller: {
 			RackPrincipalLimpieza: "",
@@ -22,6 +27,29 @@ function Taller() {
 			FuncionamientoAP: "",
 		},
 	});
+
+	useEffect(() => {
+		if (thisIsAFormToEdit) {
+			axios
+				.get("http://localhost:8080/userForm", {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((res) => {
+					setFormData({
+						Taller: {
+							RackPrincipalLimpieza: res.data.taller.RackPrincipalLimpieza,
+							RackPrincipalOrden: res.data.taller.RackPrincipalOrden,
+							FuncionamientoTelefono: res.data.taller.FuncionamientoTelefono,
+							FuncionamientoAP: res.data.taller.FuncionamientoAP,
+						},
+					});
+				});
+		}
+	}, []);
+
 	const apploadImage = async () => {
 		let stateFormCopy = { ...formData };
 		for (const key in filestToTransform) {
@@ -52,8 +80,11 @@ function Taller() {
 	};
 
 	const handleSubmit = async () => {
+		let checkingIfIsInEditMode = !thisIsAFormToEdit
+			? Object.values(filestToTransform.Taller).length === 2
+			: true;
 		if (
-			Object.values(filestToTransform.Taller).length === 2 &&
+			checkingIfIsInEditMode &&
 			formData.Taller.FuncionamientoAP !== "" &&
 			formData.Taller.FuncionamientoTelefono !== ""
 		) {
@@ -90,84 +121,76 @@ function Taller() {
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (limpieza)
 			</FormLabel>
-			<Input
-				border="none"
-				type="file"
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Taller: {
-							...prevFiles?.Taller,
-							RackPrincipalLimpieza: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-					"&::-webkit-file-upload-text": {
-						color: "blue",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalLimpieza ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Taller"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Taller"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Taller"
+					subKeyNameToSetTheState="RackPrincipalLimpieza"
+				/>
+			)}
 
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (orden)
 			</FormLabel>
-			<Input
-				border="none"
-				type="file"
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Taller: {
-							...prevFiles?.Taller,
-							RackPrincipalOrden: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
-
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalOrden ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Taller"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Taller"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Taller"
+					subKeyNameToSetTheState="RackPrincipalOrden"
+				/>
+			)}
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectFile
+			<FormSelectOption
+				formData={formData}
 				setFormData={setFormData}
 				setFormErrors={setFormErrors}
 				formDataKeyName="Taller"
 				formDataSubKeyName="FuncionamientoAP"
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento teléfono
 			</FormLabel>
-			<FormSelectFile
+			<FormSelectOption
+				formData={formData}
 				setFormData={setFormData}
 				setFormErrors={setFormErrors}
 				formDataKeyName="Taller"
 				formDataSubKeyName="FuncionamientoTelefono"
 			/>
-
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

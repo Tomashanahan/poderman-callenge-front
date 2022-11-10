@@ -32,7 +32,6 @@ const CountdownTimer = () => {
 
 	const getFormattedTime = (millisec) => {
 		if (millisec === "null") {
-			console.log("estoy aca", 1);
 			return (
 				<Button
 					bg={"blue.400"}

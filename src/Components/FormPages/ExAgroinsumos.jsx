@@ -1,7 +1,9 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
-import { useState } from "react";
-import FormSelectFile from "../Commons/FormSelectFile";
+import { useEffect, useState } from "react";
+import FormSelectOption from "../Commons/FormSelectOption";
+import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
+import EditImageFileForm from "../Commons/EditImageFileForm";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -9,11 +11,15 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function ExAgroinsumos() {
+function ExAgroinsumos({ thisIsAFormToEdit, setShowModal }) {
 	const [loading, setLoading] = useState(false);
 	const [formErrors, setFormErrors] = useState("");
 	const [filestToTransform, setFilestToTransform] = useState({
 		ExAgroinsumos: {},
+	});
+	const [editImage, setEditImage] = useState({
+		RackPrincipalLimpieza: false,
+		RackPrincipalOrden: false,
 	});
 
 	const [formData, setFormData] = useState({
@@ -23,6 +29,30 @@ function ExAgroinsumos() {
 			FuncionamientoAP: "",
 		},
 	});
+	console.log("formData:", formData);
+
+	useEffect(() => {
+		if (thisIsAFormToEdit) {
+			axios
+				.get("http://localhost:8080/userForm", {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((res) => {
+					setFormData({
+						ExAgroinsumos: {
+							RackPrincipalLimpieza:
+								res.data.exAgroinsumos.RackPrincipalLimpieza,
+							RackPrincipalOrden: res.data.exAgroinsumos.RackPrincipalOrden,
+							FuncionamientoAP: res.data.exAgroinsumos.FuncionamientoAP,
+						},
+					});
+				});
+		}
+	}, []);
+
 	const apploadImage = async () => {
 		let stateFormCopy = { ...formData };
 		for (const key in filestToTransform) {
@@ -53,8 +83,11 @@ function ExAgroinsumos() {
 	};
 
 	const handleSubmit = async () => {
+		let checkingIfIsInEditMode = !thisIsAFormToEdit
+			? Object.values(filestToTransform.ExAgroinsumos).length === 2
+			: true;
 		if (
-			Object.values(filestToTransform.ExAgroinsumos).length === 2 &&
+			checkingIfIsInEditMode &&
 			formData.ExAgroinsumos.FuncionamientoAP !== ""
 		) {
 			if (
@@ -79,6 +112,7 @@ function ExAgroinsumos() {
 					},
 				});
 				setLoading(false);
+				setShowModal(false)
 			}
 		} else {
 			setFormErrors("Complete todos los campos por favor");
@@ -90,74 +124,67 @@ function ExAgroinsumos() {
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (limpieza)
 			</FormLabel>
-			<Input
-				border="none"
-				type="file"
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						ExAgroinsumos: {
-							...prevFiles?.ExAgroinsumos,
-							RackPrincipalLimpieza: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-					"&::-webkit-file-upload-text": {
-						color: "blue",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalLimpieza ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="ExAgroinsumos"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="ExAgroinsumos"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="ExAgroinsumos"
+					subKeyNameToSetTheState="RackPrincipalLimpieza"
+				/>
+			)}
 
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (orden)
 			</FormLabel>
-			<Input
-				border="none"
-				type="file"
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						ExAgroinsumos: {
-							...prevFiles?.ExAgroinsumos,
-							RackPrincipalOrden: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalOrden ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="ExAgroinsumos"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="ExAgroinsumos"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="ExAgroinsumos"
+					subKeyNameToSetTheState="RackPrincipalOrden"
+				/>
+			)}
 
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectFile
+			<FormSelectOption
+				formData={formData}
 				setFormData={setFormData}
 				setFormErrors={setFormErrors}
 				formDataKeyName="ExAgroinsumos"
 				formDataSubKeyName="FuncionamientoAP"
 			/>
-
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

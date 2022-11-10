@@ -8,7 +8,7 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function Oficina() {
+function Oficina({ thisIsAFormToEdit }) {
 	const [loading, setLoading] = useState(false);
 	const [filestToTransform, setFilestToTransform] = useState({ Oficina: {} });
 	const [formErrors, setFormErrors] = useState("");
@@ -86,7 +86,8 @@ function Oficina() {
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Oficina.FuncionamientoTelefono}
 				onChange={(e) => {
 					e.preventDefault();
 					setFormErrors("");
@@ -118,7 +119,8 @@ function Oficina() {
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Oficina.LimpiarPC}
 				onChange={(e) => {
 					e.preventDefault();
 					setFormErrors("");
@@ -147,7 +149,8 @@ function Oficina() {
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Oficina.AcomodarCables}
 				onChange={(e) => {
 					e.preventDefault();
 					setFormErrors("");

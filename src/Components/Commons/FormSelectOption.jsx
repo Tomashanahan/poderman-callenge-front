@@ -1,17 +1,28 @@
 import { Input, Select } from "@chakra-ui/react";
 import React, { useState } from "react";
 
-function FormSelectFile({
+function FormSelectOption({
+	formData,
 	setFormData,
 	formDataKeyName,
 	formDataSubKeyName,
 	setFormErrors,
 }) {
 	const [observations, setObservations] = useState(false);
+
+	const selectDefaultValue = () => {
+		if (formData[formDataKeyName][formDataSubKeyName] === "Si") {
+			return "Si";
+		} else if (formData[formDataKeyName][formDataSubKeyName] === "No") {
+			return "No";
+		}
+	};
+
 	return (
 		<>
 			<Select
 				placeholder="Selecciona una opción"
+				value={observations ? "Observaciones" : selectDefaultValue()}
 				onChange={(e) => {
 					if (e.target.value === "Observaciones") {
 						setObservations(true);
@@ -37,6 +48,7 @@ function FormSelectFile({
 					bg="white"
 					type="text"
 					mt="10px"
+					value={selectDefaultValue()}
 					onChange={(e) => {
 						setFormErrors("");
 						setFormData((lastFormValues) => ({
@@ -53,4 +65,4 @@ function FormSelectFile({
 	);
 }
 
-export default FormSelectFile;
+export default FormSelectOption;

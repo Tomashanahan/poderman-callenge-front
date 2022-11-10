@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import FormSelectFile from "../Commons/FormSelectFile";
+import FormSelectOption from "../Commons/FormSelectOption";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -9,7 +9,7 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function Balanza() {
+function Balanza({ thisIsAFormToEdit }) {
 	const [loading, setLoading] = useState(false);
 	const [formErrors, setFormErrors] = useState("");
 	const [filestToTransform, setFilestToTransform] = useState({
@@ -100,7 +100,8 @@ function Balanza() {
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Balanza.RackPrincipalLimpieza}
 				onChange={(e) => {
 					e.preventDefault();
 					setFilestToTransform((prevFiles) => ({
@@ -125,13 +126,13 @@ function Balanza() {
 					},
 				}}
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (orden)
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Balanza.RackPrincipalOrden}
 				onChange={(e) => {
 					e.preventDefault();
 					setFilestToTransform((prevFiles) => ({
@@ -153,13 +154,13 @@ function Balanza() {
 					},
 				}}
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				Limpiar PC
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Balanza.LimpiarPC}
 				onChange={(e) => {
 					e.preventDefault();
 					setFilestToTransform((prevFiles) => ({
@@ -181,37 +182,27 @@ function Balanza() {
 					},
 				}}
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectFile
-				setFormData={setFormData}
-				setFormErrors={setFormErrors}
-				formDataKeyName="Balanza"
-				formDataSubKeyName="FuncionamientoAP"
-			/>
-
+			<FormSelectOption formData={formData}
+			setFormData={setFormData}
+			setFormErrors={setFormErrors}
+			formDataKeyName="Balanza" formDataSubKeyName="FuncionamientoAP" />
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento teléfono
 			</FormLabel>
-			<FormSelectFile
-				setFormData={setFormData}
-				setFormErrors={setFormErrors}
-				formDataKeyName="Balanza"
-				formDataSubKeyName="FuncionamientoTelefono"
-			/>
-
+			<FormSelectOption formData={formData}
+			setFormData={setFormData}
+			setFormErrors={setFormErrors}
+			formDataKeyName="Balanza" formDataSubKeyName="FuncionamientoTelefono" />
 			<FormLabel mt="20px" fontWeight="bold">
 				UPS
 			</FormLabel>
-			<FormSelectFile
-				setFormData={setFormData}
-				setFormErrors={setFormErrors}
-				formDataKeyName="Balanza"
-				formDataSubKeyName="UPS"
-			/>
-
+			<FormSelectOption formData={formData}
+			setFormData={setFormData}
+			setFormErrors={setFormErrors}
+			formDataKeyName="Balanza" formDataSubKeyName="UPS" />
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

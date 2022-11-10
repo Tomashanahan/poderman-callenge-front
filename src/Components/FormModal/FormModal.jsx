@@ -8,36 +8,93 @@ import Balanza from "../FormPages/Balanza";
 import Agroinsumos from "../FormPages/Agroinsumos";
 import Camaras from "../FormPages/Camaras";
 
-function FormModal({ formToShow, clouseModal }) {
+function FormModal({
+	getAllVisitedInfo,
+	setShowModal,
+	formToShow,
+	clouseModal,
+	thisIsAFormToEdit,
+}) {
 	const FormTitles = {
 		casaPrincipal: {
 			title: "Casa Principal",
-			component: <CasaPrincipal />,
+			component: (
+				<CasaPrincipal
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
 		},
 		exAgroinsumos: {
-			title: "ExAgroinsumos",
-			component: <ExAgroinsumos />,
+			title: "Ex Agroinsumos",
+			component: (
+				<ExAgroinsumos
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
 		},
 		taller: {
 			title: "Taller",
-			component: <Taller />,
+			component: (
+				<Taller
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
 		},
 		hangar: {
 			title: "Hangar",
-			component: <Hangar />,
+			component: (
+				<Hangar
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
 		},
 		oficina: {
 			title: "Oficina",
-			component: <Oficina />,
+			component: (
+				<Oficina
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
 		},
 		balanza: {
 			title: "Balanza",
-			component: <Balanza />,
+			component: (
+				<Balanza
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
 		},
-		agroinsumos: { title: "Agroinsumos", component: <Agroinsumos /> },
+		agroinsumos: {
+			title: "Agroinsumos",
+			component: (
+				<Agroinsumos
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
+		},
 		camaras: {
 			title: "Camaras",
-			component: <Camaras />,
+			component: (
+				<Camaras
+					thisIsAFormToEdit={thisIsAFormToEdit}
+					setShowModal={setShowModal}
+					getAllVisitedInfo={getAllVisitedInfo}
+				/>
+			),
 		},
 	};
 
@@ -52,7 +109,6 @@ function FormModal({ formToShow, clouseModal }) {
       box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);"
 			left="50%"
 			w="61%"
-			// h="90%"
 			h="-webkit-fit-content"
 			borderRadius="8px"
 			p="30px"

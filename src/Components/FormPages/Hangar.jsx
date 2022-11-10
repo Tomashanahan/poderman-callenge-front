@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import FormSelectFile from "../Commons/FormSelectFile";
+import FormSelectOption from "../Commons/FormSelectOption";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -9,7 +9,7 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function Hangar() {
+function Hangar({ thisIsAFormToEdit }) {
 	const [loading, setLoading] = useState(false);
 	const [filestToTransform, setFilestToTransform] = useState({ Hangar: {} });
 	const [formErrors, setFormErrors] = useState("");
@@ -22,7 +22,7 @@ function Hangar() {
 			FuncionamientoAP: "",
 		},
 	});
-	console.log('formData:', formData)
+	console.log("formData:", formData);
 	const apploadImage = async () => {
 		let stateFormCopy = { ...formData };
 		for (const key in filestToTransform) {
@@ -94,10 +94,11 @@ function Hangar() {
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Hangar.RackPrincipalLimpieza}
 				onChange={(e) => {
 					e.preventDefault();
-					setFormErrors("")
+					setFormErrors("");
 					setFilestToTransform((prevFiles) => ({
 						...prevFiles,
 						Hangar: {
@@ -120,16 +121,16 @@ function Hangar() {
 					},
 				}}
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (orden)
 			</FormLabel>
 			<Input
 				border="none"
-				type="file"
+				type={thisIsAFormToEdit ? "text" : "file"}
+				value={thisIsAFormToEdit && formData.Hangar.RackPrincipalOrden}
 				onChange={(e) => {
 					e.preventDefault();
-					setFormErrors("")
+					setFormErrors("");
 					setFilestToTransform((prevFiles) => ({
 						...prevFiles,
 						Hangar: {
@@ -149,27 +150,20 @@ function Hangar() {
 					},
 				}}
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectFile
-				setFormData={setFormData}
-				setFormErrors={setFormErrors}
-				formDataKeyName="Hangar"
-				formDataSubKeyName="FuncionamientoAP"
-			/>
-
+			<FormSelectOption formData={formData} 
+			setFormData={setFormData}
+			setFormErrors={setFormErrors}
+			formDataKeyName="Hangar" formDataSubKeyName="FuncionamientoAP" />
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento teléfono
 			</FormLabel>
-			<FormSelectFile
-				setFormData={setFormData}
-				setFormErrors={setFormErrors}
-				formDataKeyName="Hangar"
-				formDataSubKeyName="FuncionamientoTelefono"
-			/>
-
+			<FormSelectOption formData={formData}
+			setFormData={setFormData}
+			setFormErrors={setFormErrors}
+			formDataKeyName="Hangar" formDataSubKeyName="FuncionamientoTelefono" />
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

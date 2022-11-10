@@ -1,7 +1,10 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
-import FormSelectFile from "../Commons/FormSelectFile";
+import { Box, Button, Flex, FormLabel, Text } from "@chakra-ui/react";
+import FormSelectOption from "../Commons/FormSelectOption";
+import { useEffect } from "react";
+import EditImageFileForm from "../Commons/EditImageFileForm";
+import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -9,11 +12,15 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function CasaPrincipal() {
+function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo }) {
 	const [loading, setLoading] = useState(false);
 	const [formErrors, setFormErrors] = useState("");
 	const [filestToTransform, setFilestToTransform] = useState({
 		CasaPrincipal: {},
+	});
+	const [editImage, setEditImage] = useState({
+		RackPrincipalLimpieza: false,
+		RackPrincipalOrden: false,
 	});
 
 	const [formData, setFormData] = useState({
@@ -25,6 +32,32 @@ function CasaPrincipal() {
 			UPS: "",
 		},
 	});
+
+	useEffect(() => {
+		if (thisIsAFormToEdit) {
+			axios
+				.get("http://localhost:8080/userForm", {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((res) => {
+					setFormData({
+						CasaPrincipal: {
+							RackPrincipalLimpieza:
+								res.data.casaPrincipal.RackPrincipalLimpieza,
+							RackPrincipalOrden: res.data.casaPrincipal.RackPrincipalOrden,
+							FuncionamientoAP: res.data.casaPrincipal.FuncionamientoAP,
+							FuncionamientoTelefono:
+								res.data.casaPrincipal.FuncionamientoTelefono,
+							UPS: res.data.casaPrincipal.UPS,
+						},
+					});
+				});
+		}
+	}, []);
+
 	const apploadImage = async () => {
 		let stateFormCopy = { ...formData };
 		for (const key in filestToTransform) {
@@ -55,8 +88,11 @@ function CasaPrincipal() {
 	};
 
 	const handleSubmit = async () => {
+		let checkingIfIsInEditMode = !thisIsAFormToEdit
+			? Object.values(filestToTransform.CasaPrincipal).length === 2
+			: true;
 		if (
-			Object.values(filestToTransform.CasaPrincipal).length === 2 &&
+			checkingIfIsInEditMode &&
 			formData.CasaPrincipal.FuncionamientoAP !== "" &&
 			formData.CasaPrincipal.FuncionamientoTelefono !== "" &&
 			formData.CasaPrincipal.UPS !== ""
@@ -84,6 +120,7 @@ function CasaPrincipal() {
 					},
 				});
 				setLoading(false);
+				await getAllVisitedInfo();
 			}
 		} else {
 			setFormErrors("Complete todos los campor por favor");
@@ -95,86 +132,80 @@ function CasaPrincipal() {
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (limpieza)
 			</FormLabel>
-			<Input
-				border="none"
-				type="file"
-				onChange={(e) => {
-					e.preventDefault();
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						CasaPrincipal: {
-							...prevFiles?.CasaPrincipal,
-							RackPrincipalLimpieza: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-					"&::-webkit-file-upload-text": {
-						color: "blue",
-					},
-				}}
-			/>
-
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalLimpieza ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="CasaPrincipal"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="CasaPrincipal"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="CasaPrincipal"
+					subKeyNameToSetTheState="RackPrincipalLimpieza"
+				/>
+			)}
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (orden)
 			</FormLabel>
-			<Input
-				border="none"
-				type="file"
-				onChange={(e) => {
-					e.preventDefault();
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						CasaPrincipal: {
-							...prevFiles?.CasaPrincipal,
-							RackPrincipalOrden: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
-
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalOrden ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="CasaPrincipal"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="CasaPrincipal"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="CasaPrincipal"
+					subKeyNameToSetTheState="RackPrincipalOrden"
+				/>
+			)}
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectFile
+			<FormSelectOption
+				formData={formData}
 				setFormData={setFormData}
 				setFormErrors={setFormErrors}
 				formDataKeyName="CasaPrincipal"
 				formDataSubKeyName="FuncionamientoAP"
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento teléfono
 			</FormLabel>
-			<FormSelectFile
+			<FormSelectOption
+				formData={formData}
 				setFormData={setFormData}
 				setFormErrors={setFormErrors}
 				formDataKeyName="CasaPrincipal"
 				formDataSubKeyName="FuncionamientoTelefono"
 			/>
-
 			<FormLabel mt="20px" fontWeight="bold">
 				UPS
 			</FormLabel>
-			<FormSelectFile
+			<FormSelectOption
+				formData={formData}
 				setFormData={setFormData}
 				setFormErrors={setFormErrors}
 				formDataKeyName="CasaPrincipal"

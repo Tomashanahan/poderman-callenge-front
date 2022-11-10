@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import FormSelectFile from "../Commons/FormSelectFile";
+import FormSelectOption from "../Commons/FormSelectOption";
 
 const token = JSON.parse(localStorage.getItem("token"));
 
@@ -45,7 +45,8 @@ function Agroinsumos() {
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectFile
+			<FormSelectOption
+				formData={formData}
 				setFormData={setFormData}
 				setFormErrors={setFormErrors}
 				formDataKeyName="Agroinsumos"

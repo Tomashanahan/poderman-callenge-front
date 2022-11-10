@@ -9,7 +9,7 @@ const HomeUser = () => {
 			{userInfo !== null || token !== null ? (
 					<Outlet />
 			) : (
-				<Navigate to="/" />
+				<Navigate to="/login" />
 			)}
 		</>
 	);
