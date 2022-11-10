@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { Box } from "@chakra-ui/react";
 
-import Form from "./Components/Form/Form";
 import Login from "./Components/Login/Login";
 import HomeUser from "./Components/authRoutes/HomeUser";
 import AdminDashboard from "./Components/Admin/AdminDashboard";
@@ -23,7 +22,6 @@ function App() {
 				</Route>
 				<Route exact path="/user" element={<HomeUser />}>
 					<Route path="" element={<UserHome />} />
-					<Route path="form" element={<Form />} />
 				</Route>
 			</Routes>
 		</Box>

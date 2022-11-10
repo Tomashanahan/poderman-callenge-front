@@ -25,6 +25,9 @@ function UserHome() {
 	const iterateCategoriesKeys = (object) => {
 		let storeAllTheKeys = [];
 		for (const key in object) {
+			if (object[key] === null) {
+				continue;
+			}
 			if (
 				key !== "id" &&
 				key !== "preference_id" &&
@@ -33,14 +36,14 @@ function UserHome() {
 				key !== "UserId"
 			) {
 				storeAllTheKeys.push(
-					object[key].startsWith("https://") ? (
-						<>
+					object[key]?.startsWith("https://") ? (
+						<Flex align="center" gap="20px" justify="space-between">
 							<Text key={object.createdAt}>{key}</Text>
-							<Image src={object[key]} />
-						</>
+							<Image src={object[key]} w="150px" h="100px" borderRadius="8px"  objectFit={'contain'} />
+						</Flex>
 					) : (
 						<Text key={object.createdAt}>
-							{key}: {object[key]}
+							{key.replace(/([a-z0-9])([A-Z])/g, "$1 $2")}: <Text as="span" fontWeight="extrabold">{object[key]}</Text>
 						</Text>
 					)
 				);
@@ -68,7 +71,7 @@ function UserHome() {
 								textTransform="capitalize"
 								color="black"
 							>
-								{key}
+								{key.replace(/([a-z0-9])([A-Z])/g, "$1 $2")}
 							</Text>
 							<Box fontSize="20px" cursor="pointer">
 								<AiFillEdit />
@@ -90,8 +93,8 @@ function UserHome() {
 
 	const calcValuesToComplete = () => {
 		let allNecessaryInfo = [
-			"casaprincipal",
-			"exagroinsumos",
+			"casaPrincipal",
+			"exAgroinsumos",
 			"taller",
 			"hangar",
 			"oficina",
@@ -108,7 +111,7 @@ function UserHome() {
 	};
 
 	return (
-		<Box w="60%" m="auto" my="40px">
+		<Box w="60%" m="auto" my="40px" minH="600px">
 			{showModal && (
 				<FormModal formToShow={formSelected} clouseModal={setShowModal} />
 			)}
@@ -128,7 +131,7 @@ function UserHome() {
 							}}
 						>
 							{calcValuesToComplete()?.map((element) => (
-								<option value={element}>{element}</option>
+								<option value={element}>{element.replace(/([a-z0-9])([A-Z])/g, '$1 $2')}</option>
 							))}
 						</Select>
 						<Button

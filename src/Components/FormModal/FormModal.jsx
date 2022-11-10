@@ -9,13 +9,12 @@ import Agroinsumos from "../FormPages/Agroinsumos";
 import Camaras from "../FormPages/Camaras";
 
 function FormModal({ formToShow, clouseModal }) {
-	console.log("formToShow:", formToShow);
 	const FormTitles = {
 		casaPrincipal: {
 			title: "Casa Principal",
 			component: <CasaPrincipal />,
 		},
-		exagroinsumos: {
+		exAgroinsumos: {
 			title: "ExAgroinsumos",
 			component: <ExAgroinsumos />,
 		},
@@ -47,22 +46,27 @@ function FormModal({ formToShow, clouseModal }) {
 			pos="absolute"
 			bg="#FFFF"
 			zIndex={1000}
-			top="45%"
+			top="0px"
 			boxShadow="-webkit-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       -moz-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);"
 			left="50%"
 			w="61%"
-			h="90%"
+			// h="90%"
+			h="-webkit-fit-content"
 			borderRadius="8px"
 			p="30px"
-			transform="translate(-50%,-50%)"
+			transform="translate(-50%, 0%)"
+			overflowY="scroll"
 		>
 			<Button
 				pos="absolute"
 				right="30px"
 				top="30px"
+				bg="red"
+				color="white"
 				onClick={() => clouseModal(false)}
+				_hover={{ bg: "red", color: "white" }}
 			>
 				X
 			</Button>
