@@ -1,7 +1,10 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormSelectOption from "../Commons/FormSelectOption";
+import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
+import EditImageFileForm from "../Commons/EditImageFileForm";
+import Swal from "sweetalert2";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -9,13 +12,17 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function Balanza({ thisIsAFormToEdit }) {
+function Balanza({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	const [loading, setLoading] = useState(false);
 	const [formErrors, setFormErrors] = useState("");
 	const [filestToTransform, setFilestToTransform] = useState({
 		Balanza: {},
 	});
-
+	const [editImage, setEditImage] = useState({
+		RackPrincipalLimpieza: false,
+		RackPrincipalOrden: false,
+		LimpiarPC: false,
+	});
 	const [formData, setFormData] = useState({
 		Balanza: {
 			RackPrincipalLimpieza: "",
@@ -26,6 +33,30 @@ function Balanza({ thisIsAFormToEdit }) {
 			FuncionamientoTelefono: "",
 		},
 	});
+
+	useEffect(() => {
+		if (thisIsAFormToEdit) {
+			axios
+				.get("http://localhost:8080/userForm", {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((res) => {
+					setFormData({
+						Balanza: {
+							RackPrincipalLimpieza: res.data.balanza.RackPrincipalLimpieza,
+							RackPrincipalOrden: res.data.balanza.RackPrincipalOrden,
+							FuncionamientoAP: res.data.balanza.FuncionamientoAP,
+							LimpiarPC: res.data.balanza.LimpiarPC,
+							UPS: res.data.balanza.UPS,
+							FuncionamientoTelefono: res.data.balanza.FuncionamientoTelefono,
+						},
+					});
+				});
+		}
+	}, []);
 
 	const apploadImage = async () => {
 		let stateFormCopy = { ...formData };
@@ -57,38 +88,50 @@ function Balanza({ thisIsAFormToEdit }) {
 	};
 
 	const handleSubmit = async () => {
+		let checkingIfIsInEditMode = !thisIsAFormToEdit
+			? Object.values(filestToTransform.Balanza).length === 3
+			: true;
 		if (
-			Object.values(filestToTransform.Balanza).length === 3 &&
+			checkingIfIsInEditMode &&
 			formData.Balanza.FuncionamientoAP !== "" &&
 			formData.Balanza.FuncionamientoTelefono !== "" &&
 			formData.Balanza.UPS !== ""
 		) {
-			if (
-				window.confirm(
-					"Are you sure you want to save this thing into the database?"
-				)
-			) {
-				setLoading(true);
-				let result = await apploadImage();
-				console.log("result:", result);
-				await axios.post("http://localhost:8080/userForm/form", result, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setFormData({
-					Balanza: {
-						RackPrincipalLimpieza: "",
-						RackPrincipalOrden: "",
-						FuncionamientoAP: "",
-						LimpiarPC: "",
-						UPS: "",
-						FuncionamientoTelefono: "",
-					},
-				});
-				setLoading(false);
-			}
+			Swal.fire({
+				title: "¿Estás de acuerdo con guardar los cambios?",
+				showCancelButton: true,
+				confirmButtonText: "Save",
+			}).then(async (result) => {
+				if (result.isConfirmed) {
+					setLoading(true);
+					let result = await apploadImage();
+
+					await axios.post("http://localhost:8080/userForm/form", result, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					});
+					setFormData({
+						Balanza: {
+							RackPrincipalLimpieza: "",
+							RackPrincipalOrden: "",
+							FuncionamientoAP: "",
+							LimpiarPC: "",
+							UPS: "",
+							FuncionamientoTelefono: "",
+						},
+					});
+					setLoading(false);
+					getAllVisitedInfo();
+					clouseModal(false);
+					window.scrollTo(0, 0);
+
+					Swal.fire("Saved!", "", "success");
+				} else if (result.isDenied) {
+					Swal.fire("Changes are not saved", "", "info");
+				}
+			});
 		} else {
 			setFormErrors("Complete todos los campos por favor");
 		}
@@ -98,111 +141,114 @@ function Balanza({ thisIsAFormToEdit }) {
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (limpieza)
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Balanza.RackPrincipalLimpieza}
-				onChange={(e) => {
-					e.preventDefault();
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Balanza: {
-							...prevFiles?.Balanza,
-							RackPrincipalLimpieza: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-					"&::-webkit-file-upload-text": {
-						color: "blue",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalLimpieza ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Balanza"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Balanza"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Balanza"
+					subKeyNameToSetTheState="RackPrincipalLimpieza"
+				/>
+			)}
+
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (orden)
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Balanza.RackPrincipalOrden}
-				onChange={(e) => {
-					e.preventDefault();
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Balanza: {
-							...prevFiles?.Balanza,
-							RackPrincipalOrden: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalOrden ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Balanza"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Balanza"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Balanza"
+					subKeyNameToSetTheState="RackPrincipalOrden"
+				/>
+			)}
+
 			<FormLabel mt="20px" fontWeight="bold">
 				Limpiar PC
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Balanza.LimpiarPC}
-				onChange={(e) => {
-					e.preventDefault();
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Balanza: {
-							...prevFiles?.Balanza,
-							LimpiarPC: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.LimpiarPC ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Balanza"
+						subKeyNameToSetTheState="LimpiarPC"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Balanza"
+						subKeyNameToSetTheState="LimpiarPC"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Balanza"
+					subKeyNameToSetTheState="LimpiarPC"
+				/>
+			)}
+
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectOption formData={formData}
-			setFormData={setFormData}
-			setFormErrors={setFormErrors}
-			formDataKeyName="Balanza" formDataSubKeyName="FuncionamientoAP" />
+			<FormSelectOption
+				formData={formData}
+				setFormData={setFormData}
+				setFormErrors={setFormErrors}
+				formDataKeyName="Balanza"
+				formDataSubKeyName="FuncionamientoAP"
+			/>
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento teléfono
 			</FormLabel>
-			<FormSelectOption formData={formData}
-			setFormData={setFormData}
-			setFormErrors={setFormErrors}
-			formDataKeyName="Balanza" formDataSubKeyName="FuncionamientoTelefono" />
+			<FormSelectOption
+				formData={formData}
+				setFormData={setFormData}
+				setFormErrors={setFormErrors}
+				formDataKeyName="Balanza"
+				formDataSubKeyName="FuncionamientoTelefono"
+			/>
 			<FormLabel mt="20px" fontWeight="bold">
 				UPS
 			</FormLabel>
-			<FormSelectOption formData={formData}
-			setFormData={setFormData}
-			setFormErrors={setFormErrors}
-			formDataKeyName="Balanza" formDataSubKeyName="UPS" />
+			<FormSelectOption
+				formData={formData}
+				setFormData={setFormData}
+				setFormErrors={setFormErrors}
+				formDataKeyName="Balanza"
+				formDataSubKeyName="UPS"
+			/>
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

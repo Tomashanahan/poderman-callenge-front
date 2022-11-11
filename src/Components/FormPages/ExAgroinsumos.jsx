@@ -1,9 +1,10 @@
 import axios from "axios";
-import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, FormLabel, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import FormSelectOption from "../Commons/FormSelectOption";
 import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
 import EditImageFileForm from "../Commons/EditImageFileForm";
+import Swal from "sweetalert2";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -11,7 +12,7 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function ExAgroinsumos({ thisIsAFormToEdit, setShowModal }) {
+function ExAgroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	const [loading, setLoading] = useState(false);
 	const [formErrors, setFormErrors] = useState("");
 	const [filestToTransform, setFilestToTransform] = useState({
@@ -29,7 +30,6 @@ function ExAgroinsumos({ thisIsAFormToEdit, setShowModal }) {
 			FuncionamientoAP: "",
 		},
 	});
-	console.log("formData:", formData);
 
 	useEffect(() => {
 		if (thisIsAFormToEdit) {
@@ -90,30 +90,38 @@ function ExAgroinsumos({ thisIsAFormToEdit, setShowModal }) {
 			checkingIfIsInEditMode &&
 			formData.ExAgroinsumos.FuncionamientoAP !== ""
 		) {
-			if (
-				window.confirm(
-					"Are you sure you want to save this thing into the database?"
-				)
-			) {
-				setLoading(true);
-				let result = await apploadImage();
-				console.log("result:", result);
-				await axios.post("http://localhost:8080/userForm/form", result, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setFormData({
-					ExAgroinsumos: {
-						RackPrincipalLimpieza: "",
-						RackPrincipalOrden: "",
-						FuncionamientoAP: "",
-					},
-				});
-				setLoading(false);
-				setShowModal(false)
-			}
+			Swal.fire({
+				title: "¿Estás de acuerdo con guardar los cambios?",
+				showCancelButton: true,
+				confirmButtonText: "Save",
+			}).then(async (result) => {
+				if (result.isConfirmed) {
+					setLoading(true);
+					let result = await apploadImage();
+
+					await axios.post("http://localhost:8080/userForm/form", result, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					});
+					setFormData({
+						ExAgroinsumos: {
+							RackPrincipalLimpieza: "",
+							RackPrincipalOrden: "",
+							FuncionamientoAP: "",
+						},
+					});
+					setLoading(false);
+					getAllVisitedInfo();
+					clouseModal(false);
+					window.scrollTo(0, 0);
+
+					Swal.fire("Saved!", "", "success");
+				} else if (result.isDenied) {
+					Swal.fire("Changes are not saved", "", "info");
+				}
+			});
 		} else {
 			setFormErrors("Complete todos los campos por favor");
 		}

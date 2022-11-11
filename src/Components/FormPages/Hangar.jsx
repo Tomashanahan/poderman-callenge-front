@@ -1,7 +1,10 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormSelectOption from "../Commons/FormSelectOption";
+import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
+import EditImageFileForm from "../Commons/EditImageFileForm";
+import Swal from "sweetalert2";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -9,11 +12,14 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function Hangar({ thisIsAFormToEdit }) {
+function Hangar({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	const [loading, setLoading] = useState(false);
 	const [filestToTransform, setFilestToTransform] = useState({ Hangar: {} });
 	const [formErrors, setFormErrors] = useState("");
-
+	const [editImage, setEditImage] = useState({
+		RackPrincipalLimpieza: false,
+		RackPrincipalOrden: false,
+	});
 	const [formData, setFormData] = useState({
 		Hangar: {
 			RackPrincipalLimpieza: "",
@@ -23,6 +29,29 @@ function Hangar({ thisIsAFormToEdit }) {
 		},
 	});
 	console.log("formData:", formData);
+
+	useEffect(() => {
+		if (thisIsAFormToEdit) {
+			axios
+				.get("http://localhost:8080/userForm", {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((res) => {
+					setFormData({
+						Hangar: {
+							RackPrincipalLimpieza: res.data.hangar.RackPrincipalLimpieza,
+							RackPrincipalOrden: res.data.hangar.RackPrincipalOrden,
+							FuncionamientoTelefono: res.data.hangar.FuncionamientoTelefono,
+							FuncionamientoAP: res.data.hangar.FuncionamientoAP,
+						},
+					});
+				});
+		}
+	}, []);
+
 	const apploadImage = async () => {
 		let stateFormCopy = { ...formData };
 		for (const key in filestToTransform) {
@@ -53,35 +82,46 @@ function Hangar({ thisIsAFormToEdit }) {
 	};
 
 	const handleSubmit = async () => {
+		let checkingIfIsInEditMode = !thisIsAFormToEdit
+			? Object.values(filestToTransform.Hangar).length === 2
+			: true;
 		if (
-			Object.values(filestToTransform.Hangar).length === 2 &&
+			checkingIfIsInEditMode &&
 			formData.Hangar.FuncionamientoTelefono !== "" &&
 			formData.Hangar.FuncionamientoAP !== ""
 		) {
-			if (
-				window.confirm(
-					"Are you sure you want to save this thing into the database?"
-				)
-			) {
-				setLoading(true);
-				let result = await apploadImage();
-				console.log("result:", result);
-				await axios.post("http://localhost:8080/userForm/form", result, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setFormData({
-					Hangar: {
-						RackPrincipalLimpieza: "",
-						RackPrincipalOrden: "",
-						FuncionamientoTelefono: "",
-						FuncionamientoAP: "",
-					},
-				});
-				setLoading(false);
-			}
+			Swal.fire({
+				title: "¿Estás de acuerdo con guardar los cambios?",
+				showCancelButton: true,
+				confirmButtonText: "Save",
+			}).then(async (result) => {
+				if (result.isConfirmed) {
+					setLoading(true);
+					let result = await apploadImage();
+
+					await axios.post("http://localhost:8080/userForm/form", result, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					});
+					setFormData({
+						Hangar: {
+							RackPrincipalLimpieza: "",
+							RackPrincipalOrden: "",
+							FuncionamientoTelefono: "",
+							FuncionamientoAP: "",
+						},
+					});
+					setLoading(false);
+					getAllVisitedInfo();
+					clouseModal(false);
+					window.scrollTo(0, 0);
+					Swal.fire("Saved!", "", "success");
+				} else if (result.isDenied) {
+					Swal.fire("Changes are not saved", "", "info");
+				}
+			});
 		} else {
 			setFormErrors("Complete todos los campos por favor");
 		}
@@ -92,78 +132,78 @@ function Hangar({ thisIsAFormToEdit }) {
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (limpieza)
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Hangar.RackPrincipalLimpieza}
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Hangar: {
-							...prevFiles?.Hangar,
-							RackPrincipalLimpieza: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-					"&::-webkit-file-upload-text": {
-						color: "blue",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalLimpieza ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Hangar"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Hangar"
+						subKeyNameToSetTheState="RackPrincipalLimpieza"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Hangar"
+					subKeyNameToSetTheState="RackPrincipalLimpieza"
+				/>
+			)}
+
 			<FormLabel mt="20px" fontWeight="bold">
 				Rack Principal (orden)
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Hangar.RackPrincipalOrden}
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Hangar: {
-							...prevFiles?.Hangar,
-							RackPrincipalOrden: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.RackPrincipalOrden ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Hangar"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Hangar"
+						subKeyNameToSetTheState="RackPrincipalOrden"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Hangar"
+					subKeyNameToSetTheState="RackPrincipalOrden"
+				/>
+			)}
+
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento AP
 			</FormLabel>
-			<FormSelectOption formData={formData} 
-			setFormData={setFormData}
-			setFormErrors={setFormErrors}
-			formDataKeyName="Hangar" formDataSubKeyName="FuncionamientoAP" />
+			<FormSelectOption
+				formData={formData}
+				setFormData={setFormData}
+				setFormErrors={setFormErrors}
+				formDataKeyName="Hangar"
+				formDataSubKeyName="FuncionamientoAP"
+			/>
+
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento teléfono
 			</FormLabel>
-			<FormSelectOption formData={formData}
-			setFormData={setFormData}
-			setFormErrors={setFormErrors}
-			formDataKeyName="Hangar" formDataSubKeyName="FuncionamientoTelefono" />
+			<FormSelectOption
+				formData={formData}
+				setFormData={setFormData}
+				setFormErrors={setFormErrors}
+				formDataKeyName="Hangar"
+				formDataSubKeyName="FuncionamientoTelefono"
+			/>
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

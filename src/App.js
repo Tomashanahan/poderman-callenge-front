@@ -13,7 +13,6 @@ function App() {
 	return (
 		<Box className="App">
 			<Routes>
-				<Route path="/yari" element={<UserHome />} />
 				<Route exact path="/" element={<HomeLogin />}>
 					<Route exact path="login" element={<Login />} />
 					<Route exact path="register" element={<Register />} />
@@ -21,9 +20,9 @@ function App() {
 				<Route exact path="/admin" element={<HomeAdmin />}>
 					<Route path="dashboard" element={<AdminDashboard />} />
 				</Route>
-				{/* <Route exact path="/user" element={<HomeUser />}>
+				<Route exact path="/user" element={<HomeUser />}>
 					<Route path="" element={<UserHome />} />
-				</Route> */}
+				</Route>
 			</Routes>
 		</Box>
 	);

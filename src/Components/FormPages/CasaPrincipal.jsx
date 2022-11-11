@@ -5,6 +5,7 @@ import FormSelectOption from "../Commons/FormSelectOption";
 import { useEffect } from "react";
 import EditImageFileForm from "../Commons/EditImageFileForm";
 import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
+import Swal from "sweetalert2";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -12,7 +13,7 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo }) {
+function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	const [loading, setLoading] = useState(false);
 	const [formErrors, setFormErrors] = useState("");
 	const [filestToTransform, setFilestToTransform] = useState({
@@ -97,31 +98,39 @@ function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo }) {
 			formData.CasaPrincipal.FuncionamientoTelefono !== "" &&
 			formData.CasaPrincipal.UPS !== ""
 		) {
-			if (
-				window.confirm(
-					"Are you sure you want to save this thing into the database?"
-				)
-			) {
-				setLoading(true);
-				let result = await apploadImage();
-				await axios.post("http://localhost:8080/userForm/form", result, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setFormData({
-					CasaPrincipal: {
-						RackPrincipalLimpieza: "",
-						RackPrincipalOrden: "",
-						FuncionamientoAP: "",
-						FuncionamientoTelefono: "",
-						UPS: "",
-					},
-				});
-				setLoading(false);
-				await getAllVisitedInfo();
-			}
+			Swal.fire({
+				title: "¿Estás de acuerdo con guardar los cambios?",
+				showCancelButton: true,
+				confirmButtonText: "Save",
+			}).then(async (result) => {
+				if (result.isConfirmed) {
+					setLoading(true);
+					let result = await apploadImage();
+					await axios.post("http://localhost:8080/userForm/form", result, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					});
+					setFormData({
+						CasaPrincipal: {
+							RackPrincipalLimpieza: "",
+							RackPrincipalOrden: "",
+							FuncionamientoAP: "",
+							FuncionamientoTelefono: "",
+							UPS: "",
+						},
+					});
+					setLoading(false);
+					await getAllVisitedInfo();
+					clouseModal(false);
+					window.scrollTo(0, 0);
+
+					Swal.fire("Saved!", "", "success");
+				} else if (result.isDenied) {
+					Swal.fire("Changes are not saved", "", "info");
+				}
+			});
 		} else {
 			setFormErrors("Complete todos los campor por favor");
 		}

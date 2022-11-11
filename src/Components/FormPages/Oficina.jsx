@@ -1,6 +1,9 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
+import EditImageFileForm from "../Commons/EditImageFileForm";
+import Swal from "sweetalert2";
 
 const token = JSON.parse(localStorage.getItem("token"));
 const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
@@ -8,10 +11,14 @@ const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo
 	?.timestamp;
 
-function Oficina({ thisIsAFormToEdit }) {
+function Oficina({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal  }) {
 	const [loading, setLoading] = useState(false);
 	const [filestToTransform, setFilestToTransform] = useState({ Oficina: {} });
 	const [formErrors, setFormErrors] = useState("");
+	const [editImage, setEditImage] = useState({
+		FuncionamientoTelefono: false,
+		LimpiarPC: false,
+	});
 
 	const [formData, setFormData] = useState({
 		Oficina: {
@@ -20,6 +27,28 @@ function Oficina({ thisIsAFormToEdit }) {
 			AcomodarCables: "",
 		},
 	});
+
+	useEffect(() => {
+		if (thisIsAFormToEdit) {
+			axios
+				.get("http://localhost:8080/userForm", {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((res) => {
+					setFormData({
+						Oficina: {
+							FuncionamientoTelefono: res.data.oficina.FuncionamientoTelefono,
+							LimpiarPC: res.data.oficina.LimpiarPC,
+							AcomodarCables: res.data.oficina.AcomodarCables,
+						},
+					});
+				});
+		}
+	}, []);
+
 	const apploadImage = async () => {
 		let stateFormCopy = { ...formData };
 		for (const key in filestToTransform) {
@@ -50,30 +79,42 @@ function Oficina({ thisIsAFormToEdit }) {
 	};
 
 	const handleSubmit = async () => {
-		if (Object.values(filestToTransform.Oficina).length === 3) {
-			if (
-				window.confirm(
-					"Are you sure you want to save this thing into the database?"
-				)
-			) {
-				setLoading(true);
-				let result = await apploadImage();
-				console.log("result:", result);
-				await axios.post("http://localhost:8080/userForm/form", result, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setFormData({
-					Oficina: {
-						FuncionamientoTelefono: "",
-						LimpiarPC: "",
-						AcomodarCables: "",
-					},
-				});
-				setLoading(false);
-			}
+		let checkingIfIsInEditMode = !thisIsAFormToEdit
+			? Object.values(filestToTransform.Oficina).length === 3
+			: true;
+		if (checkingIfIsInEditMode) {
+			Swal.fire({
+				title: "¿Estás de acuerdo con guardar los cambios?",
+				showCancelButton: true,
+				confirmButtonText: "Save",
+			}).then(async (result) => {
+				if (result.isConfirmed) {
+					setLoading(true);
+					let result = await apploadImage();
+					await axios.post("http://localhost:8080/userForm/form", result, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					});
+					setFormData({
+						Oficina: {
+							FuncionamientoTelefono: "",
+							LimpiarPC: "",
+							AcomodarCables: "",
+						},
+					});
+					setLoading(false);
+
+					getAllVisitedInfo();
+					clouseModal(false);
+					window.scrollTo(0, 0);
+
+					Swal.fire("Saved!", "", "success");
+				} else if (result.isDenied) {
+					Swal.fire("Changes are not saved", "", "info");
+				}
+			});
 		} else {
 			setFormErrors("Complete todos los campos por favor");
 		}
@@ -84,95 +125,84 @@ function Oficina({ thisIsAFormToEdit }) {
 			<FormLabel mt="20px" fontWeight="bold">
 				Funcionamiento Telefono
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Oficina.FuncionamientoTelefono}
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Oficina: {
-							...prevFiles?.Oficina,
-							FuncionamientoTelefono: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-					"&::-webkit-file-upload-text": {
-						color: "blue",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.FuncionamientoTelefono ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Oficina"
+						subKeyNameToSetTheState="FuncionamientoTelefono"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Oficina"
+						subKeyNameToSetTheState="FuncionamientoTelefono"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Oficina"
+					subKeyNameToSetTheState="FuncionamientoTelefono"
+				/>
+			)}
 
 			<FormLabel mt="20px" fontWeight="bold">
 				Limpiar PC
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Oficina.LimpiarPC}
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Oficina: {
-							...prevFiles?.Oficina,
-							LimpiarPC: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.LimpiarPC ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Oficina"
+						subKeyNameToSetTheState="LimpiarPC"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Oficina"
+						subKeyNameToSetTheState="LimpiarPC"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Oficina"
+					subKeyNameToSetTheState="LimpiarPC"
+				/>
+			)}
 
 			<FormLabel mt="20px" fontWeight="bold">
 				Acomodar Cables
 			</FormLabel>
-			<Input
-				border="none"
-				type={thisIsAFormToEdit ? "text" : "file"}
-				value={thisIsAFormToEdit && formData.Oficina.AcomodarCables}
-				onChange={(e) => {
-					e.preventDefault();
-					setFormErrors("");
-					setFilestToTransform((prevFiles) => ({
-						...prevFiles,
-						Oficina: {
-							...prevFiles?.Oficina,
-							AcomodarCables: e.target.files[0],
-						},
-					}));
-				}}
-				css={{
-					"&::-webkit-file-upload-button": {
-						color: "black",
-						borderRadius: "6px",
-						padding: "10px",
-						cursor: "pointer",
-						border: "none",
-						marginRight: "30px",
-					},
-				}}
-			/>
+			{thisIsAFormToEdit ? (
+				!editImage.AcomodarCables ? (
+					<ShowImageInEditForm
+						formData={formData}
+						editImage={editImage}
+						setEditImage={setEditImage}
+						keyNameToSetTheState="Oficina"
+						subKeyNameToSetTheState="AcomodarCables"
+					/>
+				) : (
+					<EditImageFileForm
+						setFilestToTransform={setFilestToTransform}
+						keyNameToSetTheState="Oficina"
+						subKeyNameToSetTheState="AcomodarCables"
+					/>
+				)
+			) : (
+				<EditImageFileForm
+					setFilestToTransform={setFilestToTransform}
+					keyNameToSetTheState="Oficina"
+					subKeyNameToSetTheState="AcomodarCables"
+				/>
+			)}
+
 			<Flex align="center" gap="20px" mt="30px">
 				<Button
 					isLoading={loading}

@@ -1,11 +1,12 @@
 import axios from "axios";
 import { Box, Button, Flex, FormLabel, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormSelectOption from "../Commons/FormSelectOption";
+import Swal from "sweetalert2";
 
 const token = JSON.parse(localStorage.getItem("token"));
 
-function Agroinsumos() {
+function Agroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	const [loading, setLoading] = useState(false);
 	const [formErrors, setFormErrors] = useState("");
 	const [formData, setFormData] = useState({
@@ -14,27 +15,55 @@ function Agroinsumos() {
 		},
 	});
 
-	const handleSubmit = async () => {
-		if (formData.Agroinsumos.FuncionamientoAP !== "") {
-			if (
-				window.confirm(
-					"Are you sure you want to save this thing into the database?"
-				)
-			) {
-				setLoading(true);
-				await axios.post("http://localhost:8080/userForm/form", formData, {
+	useEffect(() => {
+		if (thisIsAFormToEdit) {
+			axios
+				.get("http://localhost:8080/userForm", {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
 					},
+				})
+				.then((res) => {
+					setFormData({
+						Agroinsumos: {
+							FuncionamientoAP: res.data.agroinsumos.FuncionamientoAP,
+						},
+					});
 				});
-				setFormData({
-					Agroinsumos: {
-						FuncionamientoAP: "",
-					},
-				});
-				setLoading(false);
-			}
+		}
+	}, []);
+
+	const handleSubmit = async () => {
+		if (formData.Agroinsumos.FuncionamientoAP !== "") {
+			Swal.fire({
+				title: "¿Estás de acuerdo con guardar los cambios?",
+				showCancelButton: true,
+				confirmButtonText: "Save",
+			}).then(async (result) => {
+				if (result.isConfirmed) {
+					setLoading(true);
+					await axios.post("http://localhost:8080/userForm/form", formData, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					});
+					setFormData({
+						Agroinsumos: {
+							FuncionamientoAP: "",
+						},
+					});
+					setLoading(false);
+					getAllVisitedInfo();
+					clouseModal(false);
+					window.scrollTo(0, 0);
+
+					Swal.fire("Saved!", "", "success");
+				} else if (result.isDenied) {
+					Swal.fire("Changes are not saved", "", "info");
+				}
+			});
 		} else {
 			setFormErrors("Complete todos los campos por favor");
 		}

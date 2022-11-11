@@ -1,5 +1,5 @@
 import { Input, Select } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function FormSelectOption({
 	formData,
@@ -48,7 +48,8 @@ function FormSelectOption({
 					bg="white"
 					type="text"
 					mt="10px"
-					value={selectDefaultValue()}
+					// value={selectDefaultValue()}
+					value={formData[formDataKeyName][formDataSubKeyName]}
 					onChange={(e) => {
 						setFormErrors("");
 						setFormData((lastFormValues) => ({

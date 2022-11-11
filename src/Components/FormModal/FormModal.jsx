@@ -10,7 +10,6 @@ import Camaras from "../FormPages/Camaras";
 
 function FormModal({
 	getAllVisitedInfo,
-	setShowModal,
 	formToShow,
 	clouseModal,
 	thisIsAFormToEdit,
@@ -21,7 +20,7 @@ function FormModal({
 			component: (
 				<CasaPrincipal
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
@@ -31,7 +30,7 @@ function FormModal({
 			component: (
 				<ExAgroinsumos
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
@@ -41,7 +40,7 @@ function FormModal({
 			component: (
 				<Taller
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
@@ -51,7 +50,7 @@ function FormModal({
 			component: (
 				<Hangar
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
@@ -61,7 +60,7 @@ function FormModal({
 			component: (
 				<Oficina
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
@@ -71,7 +70,7 @@ function FormModal({
 			component: (
 				<Balanza
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
@@ -81,7 +80,7 @@ function FormModal({
 			component: (
 				<Agroinsumos
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
@@ -91,7 +90,7 @@ function FormModal({
 			component: (
 				<Camaras
 					thisIsAFormToEdit={thisIsAFormToEdit}
-					setShowModal={setShowModal}
+					clouseModal={clouseModal}
 					getAllVisitedInfo={getAllVisitedInfo}
 				/>
 			),
