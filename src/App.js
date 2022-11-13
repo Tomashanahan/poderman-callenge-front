@@ -13,16 +13,17 @@ import Header from "./Components/Header/Header";
 function App() {
 	return (
 		<Box className="App">
-			<Header/>
 			<Routes>
 				<Route exact path="/" element={<HomeLogin />}>
 					<Route exact path="login" element={<Login />} />
 					<Route exact path="register" element={<Register />} />
 				</Route>
 				<Route exact path="/admin" element={<HomeAdmin />}>
+					<Header/>
 					<Route path="dashboard" element={<AdminDashboard />} />
 				</Route>
 				<Route exact path="/user" element={<HomeUser />}>
+					<Header/>
 					<Route path="" element={<UserHome />} />
 				</Route>
 			</Routes>
