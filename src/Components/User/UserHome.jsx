@@ -13,7 +13,7 @@ function UserHome() {
 	const [showModal, setShowModal] = useState(false);
 
 	const getAllVisitedInfo = () => {
-		axios("http://localhost:8080/userForm", {
+		axios(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
 			headers: {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,

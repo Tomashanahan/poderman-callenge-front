@@ -28,12 +28,11 @@ function Hangar({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 			FuncionamientoAP: "",
 		},
 	});
-	console.log("formData:", formData);
 
 	useEffect(() => {
 		if (thisIsAFormToEdit) {
 			axios
-				.get("http://localhost:8080/userForm", {
+				.get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -102,7 +101,7 @@ function Hangar({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 					setLoading(true);
 					let result = await apploadImage();
 					if (thisIsAFormToEdit) {
-						await axios.put("http://localhost:8080/userForm/hangar", result, {
+						await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/hangar`, result, {
 							headers: {
 								"Content-Type": "application/json",
 								Authorization: `Bearer ${token}`,
@@ -110,7 +109,7 @@ function Hangar({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 						});
 					} else {
 						await axios.post(
-							"http://localhost:8080/userForm/form?typeOfCategory=hangar",
+							`${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=hangar`,
 							result,
 							{
 								headers: {

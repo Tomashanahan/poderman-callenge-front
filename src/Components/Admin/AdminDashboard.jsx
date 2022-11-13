@@ -24,7 +24,7 @@ function AdminDashboard() {
 
 	const fetchInfo = async () => {
 		const result = await axios(
-			"http://localhost:8080/admin/getAllInformation",
+			`${process.env.REACT_APP_BACKEND_URL}/admin/getAllInformation`,
 			{
 				headers: {
 					"Content-Type": "application/json",

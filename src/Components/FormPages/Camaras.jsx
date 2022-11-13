@@ -18,7 +18,7 @@ function Camaras({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	useEffect(() => {
 		if (thisIsAFormToEdit) {
 			axios
-				.get("http://localhost:8080/userForm", {
+				.get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ function Camaras({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 					setLoading(true);
 					if (thisIsAFormToEdit) {
 						console.log('result:', result)
-						await axios.put("http://localhost:8080/userForm/camaras", formData, {
+						await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/camaras`, formData, {
 							headers: {
 								"Content-Type": "application/json",
 								Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ function Camaras({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 						});
 					} else {
 						await axios.post(
-							"http://localhost:8080/userForm/form?typeOfCategory=camaras",
+							`${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=camaras`,
 							formData,
 							{
 								headers: {

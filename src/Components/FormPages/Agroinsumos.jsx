@@ -18,7 +18,7 @@ function Agroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	useEffect(() => {
 		if (thisIsAFormToEdit) {
 			axios
-				.get("http://localhost:8080/userForm", {
+				.get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ function Agroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 				if (result.isConfirmed) {
 					setLoading(true);
 					if (thisIsAFormToEdit) {
-						await axios.put("http://localhost:8080/userForm/agroinsumos", formData, {
+						await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/agroinsumos`, formData, {
 							headers: {
 								"Content-Type": "application/json",
 								Authorization: `Bearer ${token}`,
@@ -52,7 +52,7 @@ function Agroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 						});
 					} else {
 						await axios.post(
-							"http://localhost:8080/userForm/form?typeOfCategory=agroinsumos",
+							`${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=agroinsumos`,
 							formData,
 							{
 								headers: {

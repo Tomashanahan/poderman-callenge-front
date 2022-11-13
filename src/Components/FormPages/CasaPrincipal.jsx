@@ -37,7 +37,7 @@ function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	useEffect(() => {
 		if (thisIsAFormToEdit) {
 			axios
-				.get("http://localhost:8080/userForm", {
+				.get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 					setLoading(true);
 					let result = await apploadImage();
 					if (thisIsAFormToEdit) {
-						await axios.put("http://localhost:8080/userForm/casaprincipal", result, {
+						await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/casaprincipal`, result, {
 							headers: {
 								"Content-Type": "application/json",
 								Authorization: `Bearer ${token}`,
@@ -118,7 +118,7 @@ function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 						});
 					} else {
 						await axios.post(
-							"http://localhost:8080/userForm/form?typeOfCategory=casaPrincipal",
+							`${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=casaPrincipal`,
 							result,
 							{
 								headers: {

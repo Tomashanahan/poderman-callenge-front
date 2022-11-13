@@ -32,7 +32,7 @@ function Taller({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	useEffect(() => {
 		if (thisIsAFormToEdit) {
 			axios
-				.get("http://localhost:8080/userForm", {
+				.get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ function Taller({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 
 					if (thisIsAFormToEdit) {
 						console.log('result:', result)
-						await axios.put("http://localhost:8080/userForm/taller", result, {
+						await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/taller`, result, {
 							headers: {
 								"Content-Type": "application/json",
 								Authorization: `Bearer ${token}`,
@@ -111,7 +111,7 @@ function Taller({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 						});
 					} else {
 						await axios.post(
-							"http://localhost:8080/userForm/form?typeOfCategory=taller",
+							`${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=taller`,
 							result,
 							{
 								headers: {

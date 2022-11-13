@@ -34,7 +34,7 @@ function ExAgroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 	useEffect(() => {
 		if (thisIsAFormToEdit) {
 			axios
-				.get("http://localhost:8080/userForm", {
+				.get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -102,7 +102,7 @@ function ExAgroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 					setLoading(true);
 					let result = await apploadImage();
 					if (thisIsAFormToEdit) {
-						await axios.put("http://localhost:8080/userForm/exAgroinsumos", result, {
+						await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/exAgroinsumos`, result, {
 							headers: {
 								"Content-Type": "application/json",
 								Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ function ExAgroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 						});
 					} else {
 						await axios.post(
-							"http://localhost:8080/userForm/form?typeOfCategory=exAgroinsumos",
+							`${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=exAgroinsumos`,
 							result,
 							{
 								headers: {
