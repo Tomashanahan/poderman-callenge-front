@@ -43,12 +43,25 @@ function Agroinsumos({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 			}).then(async (result) => {
 				if (result.isConfirmed) {
 					setLoading(true);
-					await axios.post("http://localhost:8080/userForm/form", formData, {
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${token}`,
-						},
-					});
+					if (thisIsAFormToEdit) {
+						await axios.put("http://localhost:8080/userForm/agroinsumos", formData, {
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`,
+							},
+						});
+					} else {
+						await axios.post(
+							"http://localhost:8080/userForm/form?typeOfCategory=agroinsumos",
+							formData,
+							{
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+							}
+						);
+					}
 					setFormData({
 						Agroinsumos: {
 							FuncionamientoAP: "",

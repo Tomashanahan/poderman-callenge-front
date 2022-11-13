@@ -36,7 +36,7 @@ export default function Login() {
 			localStorage.setItem("userInfo", JSON.stringify(info.data));
 			localStorage.setItem("token", JSON.stringify(info.data.token));
 
-			if (info.data.team === "Admin") {
+			if (info.data.rol === "Admin") {
 				navigation("/admin/dashboard");
 			} else if (
 				info.data.team === "Microinformatica" ||

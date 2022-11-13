@@ -43,12 +43,27 @@ function Camaras({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 			}).then(async (result) => {
 				if (result.isConfirmed) {
 					setLoading(true);
-					await axios.post("http://localhost:8080/userForm/form", formData, {
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${token}`,
-						},
-					});
+					if (thisIsAFormToEdit) {
+						console.log('result:', result)
+						await axios.put("http://localhost:8080/userForm/camaras", formData, {
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`,
+							},
+						});
+					} else {
+						await axios.post(
+							"http://localhost:8080/userForm/form?typeOfCategory=camaras",
+							formData,
+							{
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+							}
+						);
+					}
+
 					setLoading(false);
 					getAllVisitedInfo();
 					clouseModal(false);

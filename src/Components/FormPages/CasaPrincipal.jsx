@@ -67,7 +67,10 @@ function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 				data.append("file", filestToTransform[key][subKey]);
 				data.append("api_key", process.env.REACT_APP_CLOUD_API_KEY);
 				data.append("signature", signature);
-				data.append("timestamp", timestamp);
+				data.append(
+					"timestamp",
+					timestamp || Math.round(new Date().getTime() / 1000)
+				);
 
 				const cloudinaryResponse = await axios.post(
 					`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`,
@@ -106,12 +109,25 @@ function CasaPrincipal({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 				if (result.isConfirmed) {
 					setLoading(true);
 					let result = await apploadImage();
-					await axios.post("http://localhost:8080/userForm/form", result, {
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${token}`,
-						},
-					});
+					if (thisIsAFormToEdit) {
+						await axios.put("http://localhost:8080/userForm/casaprincipal", result, {
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`,
+							},
+						});
+					} else {
+						await axios.post(
+							"http://localhost:8080/userForm/form?typeOfCategory=casaPrincipal",
+							result,
+							{
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+							}
+						);
+					}
 					setFormData({
 						CasaPrincipal: {
 							RackPrincipalLimpieza: "",

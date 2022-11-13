@@ -8,10 +8,12 @@ import HomeAdmin from "./Components/authRoutes/HomeAdmin";
 import Register from "./Components/Register/Register";
 import HomeLogin from "./Components/authRoutes/HomeLogin";
 import UserHome from './Components/User/UserHome';
+import Header from "./Components/Header/Header";
 
 function App() {
 	return (
 		<Box className="App">
+			<Header/>
 			<Routes>
 				<Route exact path="/" element={<HomeLogin />}>
 					<Route exact path="login" element={<Login />} />

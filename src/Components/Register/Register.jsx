@@ -15,10 +15,11 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Signup() {
+	const navigation = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 	const [errors, setErrors] = useState({});
@@ -74,6 +75,8 @@ export default function Signup() {
 		try {
 			await axios.post(`${process.env.REACT_APP_BACKEND_URL}/register`, form);
 			e.target.reset();
+			navigation("/login")
+			
 		} catch (error) {
 			console.log("error:", error);
 		}
@@ -83,15 +86,15 @@ export default function Signup() {
 	};
 
 	return (
-		<Flex mt="30px" align={"center"} justify={"center"}>
-			<Stack spacing={8} mx={"auto"} w={"50%"} py={12} px={6}>
+		<Flex minH={"100vh"} mt="30px" align={"center"} justify={"center"}>
+			<Stack spacing={8} mx={"auto"} w={"30%"} py={12} px={6}>
 				<Box
 					rounded={"lg"}
 					bg={useColorModeValue("white", "gray.700")}
 					boxShadow={"2xl"}
 					p={8}
 				>
-					<Stack align={"center"}>
+					<Stack align={"center"} mb="20px">
 						<Heading fontSize={"4xl"} textAlign={"center"}>
 							Crear cuenta
 						</Heading>

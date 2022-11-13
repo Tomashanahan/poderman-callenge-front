@@ -5,10 +5,10 @@ const HomeAdmin = () => {
 
 	return (
 		<>
-			{userInfo !== null && userInfo.team === "Admin" ? (
+			{userInfo !== null && userInfo.rol === "Admin" ? (
 				<Outlet />
 			) : (
-				<Navigate to="/" />
+				<Navigate to="/login" />
 			)}
 		</>
 	);

@@ -102,7 +102,7 @@ function FormModal({
 			pos="absolute"
 			bg="#FFFF"
 			zIndex={1000}
-			top="0px"
+			top="60px"
 			boxShadow="-webkit-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       -moz-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);"
