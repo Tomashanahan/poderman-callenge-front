@@ -19,12 +19,16 @@ function App() {
 					<Route exact path="register" element={<Register />} />
 				</Route>
 				<Route exact path="/admin" element={<HomeAdmin />}>
-					<Header/>
-					<Route path="dashboard" element={<AdminDashboard />} />
+					<Route path="dashboard" element={<>
+						<Header/>
+						<AdminDashboard />
+					</>} />
 				</Route>
 				<Route exact path="/user" element={<HomeUser />}>
-					<Header/>
-					<Route path="" element={<UserHome />} />
+					<Route path="" element={<>
+						<Header/>
+						<UserHome />
+					</>} />
 				</Route>
 			</Routes>
 		</Box>
