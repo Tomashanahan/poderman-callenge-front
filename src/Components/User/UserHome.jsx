@@ -141,7 +141,7 @@ function UserHome() {
 	};
 
 	return (
-		<Box w="60%" m="auto" my="40px" minH="600px">
+		<Box w={["90%","90%","80%","60%"]} m="auto" my="40px" minH="600px">
 			{showModal && (
 				<FormModal
 					getAllVisitedInfo={getAllVisitedInfo}
@@ -153,11 +153,11 @@ function UserHome() {
 			<Box>
 				{calcValuesToComplete().length ? (
 					<>
-						<Text fontWeight="extrabold" mb="20px" fontSize="30px">
+						<Text fontWeight="extrabold" mb="20px" fontSize={["24px","25px","30px","30px"]}>
 							Visita Existente
 						</Text>
 						<Box mb="60px">
-							<Text mb="10px">Campos que quedan por completar</Text>
+							<Text mb="10px" fontSize={["10px","12px","15px","15px"]}>Campos que quedan por completar</Text>
 							<Flex gap="50px">
 								<Select
 									placeholder="Selecciona un campo a completar"
@@ -178,6 +178,7 @@ function UserHome() {
 									_hover={{
 										bg: "blue.500",
 									}}
+									fontSize={["12px","12px","15px","15px"]}
 									onClick={() => {
 										setShowModal(formSelected !== "" && true);
 										setThisIsAFormToEdit(false);

@@ -5,12 +5,22 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
+import { extendTheme } from "@chakra-ui/react";
+
+const breakpoints = {
+	sm: "375px",
+	md: "400px",
+	lg: "600px",
+	xl: "1000px",
+	"2xl": "1440px",
+};
+const theme = extendTheme({ breakpoints });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
 	<React.StrictMode>
 		<BrowserRouter>
-			<ChakraProvider>
+			<ChakraProvider theme={theme}>
 				<App />
 			</ChakraProvider>
 		</BrowserRouter>
