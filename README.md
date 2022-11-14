@@ -11,20 +11,7 @@ This project is currently in development. Users can complete the differents form
   - Adding unit testing with Jest
 
 
-## Project Screen Shots
-#### Login form
-![](./Project%20Images/Login.png)
-#### Register form
-![](./Project%20Images/Register.png)
-#### Main page of the user
-![](./Project%20Images/HomeUser.png)
-#### Editing the form
-![](./Project%20Images/EditForm.png)
-
 ## Installation and Setup Instructions
-
-#### Example:
-
 Clone down this repository. You will need `node` and `npm` installed globally on your machine.  
 
 Installation:
@@ -34,6 +21,17 @@ To Start Server:
 `npm start`
 
 To Visit App:
-In <a href="https://poderman-callenge-front.vercel.app/">Deploy</a>
-In local `localhost:3000/ideas`
+- In <a href="https://poderman-callenge-front.vercel.app/">Deploy</a>
+- In local `localhost:3000/ideas`
 
+
+
+## Project Screen Shots
+#### Login form
+![](./Project%20Images/Login.png)
+#### Register form
+![](./Project%20Images/Register.png)
+#### Main page of the user
+![](./Project%20Images/HomeUser.png)
+#### Editing the form
+![](./Project%20Images/EditForm.png)
