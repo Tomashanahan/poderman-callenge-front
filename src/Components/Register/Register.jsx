@@ -23,6 +23,7 @@ export default function Signup() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 	const [errors, setErrors] = useState({});
+	const [registerErrors, setRegisterErrors] = useState("");
 	const [form, setForm] = useState({
 		fullName: "",
 		email: "",
@@ -75,10 +76,10 @@ export default function Signup() {
 		try {
 			await axios.post(`${process.env.REACT_APP_BACKEND_URL}/register`, form);
 			e.target.reset();
-			navigation("/login")
-			
+			navigation("/login");
 		} catch (error) {
-			console.log("error:", error);
+			console.log("error:", error.response.data.msg);
+			setRegisterErrors(error.response.data.msg);
 		}
 	};
 	const handleChange = (e) => {
@@ -201,11 +202,16 @@ export default function Signup() {
 									bg={"blue.400"}
 									color={"white"}
 									_hover={{
-										bg: "#242524",
+										bg: "blue.400",
 									}}
 								>
 									Registrate
 								</Button>
+								{registerErrors && (
+									<Text textAlign="center" color="red" fontWeight="bold">
+										{registerErrors}
+									</Text>
+								)}
 							</Stack>
 							<Stack pt={6}>
 								<Text align={"center"}>
