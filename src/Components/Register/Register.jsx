@@ -87,7 +87,7 @@ export default function Signup() {
 
 	return (
 		<Flex minH={"100vh"} mt="30px" align={"center"} justify={"center"}>
-			<Stack spacing={8} mx={"auto"} w={"30%"} py={12} px={6}>
+			<Stack spacing={8} mx={"auto"} w={"40%"} py={12} px={6}>
 				<Box
 					rounded={"lg"}
 					bg={useColorModeValue("white", "gray.700")}
