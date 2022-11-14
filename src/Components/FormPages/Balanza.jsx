@@ -65,6 +65,7 @@ function Balanza({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 				const data = new FormData();
 				data.append("file", filestToTransform[key][subKey]);
 				data.append("api_key", process.env.REACT_APP_CLOUD_API_KEY);
+				data.append("api_secret", process.env.REACT_APP_CLOUD_SECRET);
 				data.append("signature", signature);
 				data.append(
 					"timestamp",

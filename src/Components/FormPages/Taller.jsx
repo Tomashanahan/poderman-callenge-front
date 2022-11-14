@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, FormLabel, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import FormSelectOption from "../Commons/FormSelectOption";
 import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
@@ -58,6 +58,7 @@ function Taller({ thisIsAFormToEdit, getAllVisitedInfo, clouseModal }) {
 				const data = new FormData();
 				data.append("file", filestToTransform[key][subKey]);
 				data.append("api_key", process.env.REACT_APP_CLOUD_API_KEY);
+				data.append("api_secret", process.env.REACT_APP_CLOUD_SECRET);
 				data.append("signature", signature);
 				data.append(
 					"timestamp",
