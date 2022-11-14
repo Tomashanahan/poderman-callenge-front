@@ -20,6 +20,8 @@ export default function Login() {
 		email: "",
 		password: "",
 	});
+	const [errors, setErrors] = useState("");
+	console.log('errors:', errors)
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -46,7 +48,8 @@ export default function Login() {
 				navigation("/user");
 			}
 		} catch (error) {
-			console.log("error:", error);
+			console.log("error:", error.response.data.msg);
+			setErrors(error.response.data.msg)
 		}
 	};
 
@@ -110,6 +113,7 @@ export default function Login() {
 								>
 									Iniciar Sesion
 								</Button>
+								{errors && <Text textAlign="center" color="red" fontWeight="bold">{errors}</Text>}
 							</Stack>
 						</Stack>
 					</Box>
