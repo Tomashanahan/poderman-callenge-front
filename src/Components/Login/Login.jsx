@@ -21,35 +21,37 @@ export default function Login() {
 		password: "",
 	});
 	const [errors, setErrors] = useState("");
-	console.log('errors:', errors)
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			if (inputValues.email === "" || inputValues.password === "") return;
+			if (inputValues.email === "" || inputValues.password === "")
+				setErrors("Complete todos los campos por favor");
+			else {
+				setErrors("");
+				const info = await axios.post(
+					`${process.env.REACT_APP_BACKEND_URL}/login`,
+					{
+						email: inputValues.email,
+						password: inputValues.password,
+					}
+				);
+				localStorage.setItem("userInfo", JSON.stringify(info.data));
+				localStorage.setItem("token", JSON.stringify(info.data.token));
 
-			const info = await axios.post(
-				`${process.env.REACT_APP_BACKEND_URL}/login`,
-				{
-					email: inputValues.email,
-					password: inputValues.password,
+				if (info.data.rol === "Admin") {
+					navigation("/admin/dashboard");
+				} else if (
+					info.data.team === "Microinformatica" ||
+					info.data.team === "Telecomunicaciones" ||
+					info.data.rol === "User"
+				) {
+					navigation("/user");
 				}
-			);
-			localStorage.setItem("userInfo", JSON.stringify(info.data));
-			localStorage.setItem("token", JSON.stringify(info.data.token));
-
-			if (info.data.rol === "Admin") {
-				navigation("/admin/dashboard");
-			} else if (
-				info.data.team === "Microinformatica" ||
-				info.data.team === "Telecomunicaciones" ||
-				info.data.rol === "User"
-			) {
-				navigation("/user");
 			}
 		} catch (error) {
 			console.log("error:", error.response.data.msg);
-			setErrors(error.response.data.msg)
+			setErrors(error.response.data.msg);
 		}
 	};
 
@@ -113,7 +115,11 @@ export default function Login() {
 								>
 									Iniciar Sesion
 								</Button>
-								{errors && <Text textAlign="center" color="red" fontWeight="bold">{errors}</Text>}
+								{errors && (
+									<Text textAlign="center" color="red" fontWeight="bold">
+										{errors}
+									</Text>
+								)}
 							</Stack>
 						</Stack>
 					</Box>

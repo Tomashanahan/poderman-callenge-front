@@ -22,7 +22,15 @@ describe("when the form is mounted", () => {
 	});
 
 	it("should render the submit button", () => {
-		const button = screen.getByRole("button", {name: /Iniciar Sesion/i})
+		const button = screen.getByRole("button", { name: /Iniciar Sesion/i });
 		expect(button).toBeInTheDocument();
+	});
+});
+
+describe('when the user submits the form without values', () => {
+	it('should display an error', () => {
+		const button = screen.getByRole("button", { name: /Iniciar Sesion/i });
+		fireEvent.click(button)
+		expect(screen.getByText(/Complete todos los campos por favor/i)).toBeInTheDocument()
 	});
 });
