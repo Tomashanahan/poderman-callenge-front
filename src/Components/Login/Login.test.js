@@ -1,5 +1,3 @@
-/* eslint-disable testing-library/no-render-in-setup */
-import React from "react";
 import {screen, render, fireEvent} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 
