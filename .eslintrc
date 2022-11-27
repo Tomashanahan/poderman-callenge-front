@@ -21,6 +21,7 @@
     }
   },
   "rules": {
+    "no-console": "warn",
     "prettier/prettier": [
       "error",
       {
@@ -58,7 +59,7 @@
         "reservedFirst": true
       }
     ],
-    "sort-keys": ["error", "asc", {"caseSensitive": true, "natural": false, "minKeys": 2}],
+    "sort-keys": ["warn", "asc", {"caseSensitive": true, "natural": false, "minKeys": 2}],
     "padding-line-between-statements": [
       "error",
       {"blankLine": "always", "prev": "*", "next": "return"},
