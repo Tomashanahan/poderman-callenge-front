@@ -1,4 +1,5 @@
-import { Box, Text, Button } from "@chakra-ui/react";
+import {Box, Text, Button} from "@chakra-ui/react";
+
 import CasaPrincipal from "../FormPages/CasaPrincipal";
 import ExAgroinsumos from "../FormPages/ExAgroinsumos";
 import Taller from "../FormPages/Taller";
@@ -8,129 +9,124 @@ import Balanza from "../FormPages/Balanza";
 import Agroinsumos from "../FormPages/Agroinsumos";
 import Camaras from "../FormPages/Camaras";
 
-function FormModal({
-	getAllVisitedInfo,
-	formToShow,
-	clouseModal,
-	thisIsAFormToEdit,
-}) {
-	const FormTitles = {
-		casaPrincipal: {
-			title: "Casa Principal",
-			component: (
-				<CasaPrincipal
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-		exAgroinsumos: {
-			title: "Ex Agroinsumos",
-			component: (
-				<ExAgroinsumos
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-		taller: {
-			title: "Taller",
-			component: (
-				<Taller
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-		hangar: {
-			title: "Hangar",
-			component: (
-				<Hangar
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-		oficina: {
-			title: "Oficina",
-			component: (
-				<Oficina
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-		balanza: {
-			title: "Balanza",
-			component: (
-				<Balanza
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-		agroinsumos: {
-			title: "Agroinsumos",
-			component: (
-				<Agroinsumos
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-		camaras: {
-			title: "Camaras",
-			component: (
-				<Camaras
-					thisIsAFormToEdit={thisIsAFormToEdit}
-					clouseModal={clouseModal}
-					getAllVisitedInfo={getAllVisitedInfo}
-				/>
-			),
-		},
-	};
+function FormModal({getAllVisitedInfo, formToShow, clouseModal, thisIsAFormToEdit}) {
+  const FormTitles = {
+    agroinsumos: {
+      component: (
+        <Agroinsumos
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Agroinsumos",
+    },
+    balanza: {
+      component: (
+        <Balanza
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Balanza",
+    },
+    camaras: {
+      component: (
+        <Camaras
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Camaras",
+    },
+    casaPrincipal: {
+      component: (
+        <CasaPrincipal
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Casa Principal",
+    },
+    exAgroinsumos: {
+      component: (
+        <ExAgroinsumos
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Ex Agroinsumos",
+    },
+    hangar: {
+      component: (
+        <Hangar
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Hangar",
+    },
+    oficina: {
+      component: (
+        <Oficina
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Oficina",
+    },
+    taller: {
+      component: (
+        <Taller
+          clouseModal={clouseModal}
+          getAllVisitedInfo={getAllVisitedInfo}
+          thisIsAFormToEdit={thisIsAFormToEdit}
+        />
+      ),
+      title: "Taller",
+    },
+  };
 
-	return (
-		<Box
-			pos="absolute"
-			bg="#FFFF"
-			zIndex={1000}
-			top="60px"
-			boxShadow="-webkit-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
+  return (
+    <Box
+      bg="#FFFF"
+      borderRadius="8px"
+      boxShadow="-webkit-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       -moz-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);"
-			left="50%"
-			w="61%"
-			h="-webkit-fit-content"
-			borderRadius="8px"
-			p="30px"
-			transform="translate(-50%, 0%)"
-			overflowY="scroll"
-		>
-			<Button
-				pos="absolute"
-				right="30px"
-				top="30px"
-				bg="red"
-				color="white"
-				onClick={() => clouseModal(false)}
-				_hover={{ bg: "red", color: "white" }}
-			>
-				X
-			</Button>
-			<Text fontSize="30px" fontWeight="bold">
-				{FormTitles[formToShow]?.title}
-			</Text>
-			{FormTitles[formToShow]?.component}
-		</Box>
-	);
+      h="-webkit-fit-content"
+      left="50%"
+      overflowY="scroll"
+      p="30px"
+      pos="absolute"
+      top="60px"
+      transform="translate(-50%, 0%)"
+      w="61%"
+      zIndex={1000}
+    >
+      <Button
+        _hover={{bg: "red", color: "white"}}
+        bg="red"
+        color="white"
+        pos="absolute"
+        right="30px"
+        top="30px"
+        onClick={() => clouseModal(false)}
+      >
+        X
+      </Button>
+      <Text fontSize="30px" fontWeight="bold">
+        {FormTitles[formToShow]?.title}
+      </Text>
+      {FormTitles[formToShow]?.component}
+    </Box>
+  );
 }
 
 export default FormModal;

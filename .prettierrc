@@ -1,0 +1,16 @@
+{
+  "printWidth": 100,
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "semi": true,
+  "singleQuote": false,
+  "bracketSpacing": false,
+  "arrowParens": "always",
+  "newlines-between": "always",
+  "pathGroups": [
+    {
+      "pattern": "~/**",
+      "group": "parent"
+    }
+  ]
+}
