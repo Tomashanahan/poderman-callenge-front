@@ -40,8 +40,8 @@ export default function Login() {
         if (info.data.rol === "Admin") {
           navigation("/admin/dashboard");
         } else if (
-info.data.team === "Microinformatica" ||
-                                  info.data.team === 'Telecomunicaciones' ||
+          info.data.team === "Microinformatica" ||
+          info.data.team === "Telecomunicaciones" ||
           info.data.rol === "User"
         ) {
           navigation("/user");
