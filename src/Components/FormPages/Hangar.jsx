@@ -7,11 +7,10 @@ import FormSelectOption from "../Commons/FormSelectOption";
 import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
 import EditImageFileForm from "../Commons/EditImageFileForm";
 
-const token = JSON.parse(localStorage.getItem("token"));
-const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.signature;
-const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.timestamp;
-
 function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
+  const token = JSON.parse(localStorage.getItem("token"));
+  const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.signature;
+  const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.timestamp;
   const [loading, setLoading] = useState(false);
   const [filestToTransform, setFilestToTransform] = useState({Hangar: {}});
   const [formErrors, setFormErrors] = useState("");

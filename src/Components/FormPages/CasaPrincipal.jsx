@@ -8,11 +8,11 @@ import FormSelectOption from "../Commons/FormSelectOption";
 import EditImageFileForm from "../Commons/EditImageFileForm";
 import ShowImageInEditForm from "../Commons/ShowImageInEditForm";
 
-const token = JSON.parse(localStorage.getItem("token"));
-const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.signature;
-const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.timestamp;
-
 function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
+  const token = JSON.parse(localStorage.getItem("token"));
+  const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.signature;
+  const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.timestamp;
+
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState("");
   const [filestToTransform, setFilestToTransform] = useState({

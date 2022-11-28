@@ -5,9 +5,8 @@ import Swal from "sweetalert2";
 
 import FormSelectOption from "../Commons/FormSelectOption";
 
-const token = JSON.parse(localStorage.getItem("token"));
-
 function Agroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
+  const token = JSON.parse(localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState("");
   const [formData, setFormData] = useState({

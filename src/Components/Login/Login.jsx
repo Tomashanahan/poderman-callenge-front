@@ -16,6 +16,7 @@ import {Link, useNavigate} from "react-router-dom";
 
 export default function Login() {
   const navigation = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [inputValues, setInputValues] = useState({
     email: "",
     password: "",
@@ -24,6 +25,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       if (inputValues.email === "" || inputValues.password === "")
         setErrors("Complete todos los campos por favor");
@@ -47,8 +49,9 @@ export default function Login() {
           navigation("/user");
         }
       }
+      setLoading(false);
     } catch (error) {
-      console.log("error:", error.response.data.msg);
+      setLoading(false);
       setErrors(error.response.data.msg);
     }
   };
@@ -100,6 +103,7 @@ export default function Login() {
                   }}
                   bg={"blue.400"}
                   color={"white"}
+                  isLoading={loading}
                   type="submit"
                 >
                   Iniciar Sesion

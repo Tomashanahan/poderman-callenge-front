@@ -24,6 +24,7 @@ export default function Signup() {
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [errors, setErrors] = useState({});
   const [registerErrors, setRegisterErrors] = useState("");
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     confirmPassword: "",
     email: "",
@@ -70,6 +71,7 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     handleChange(e);
     setErrors(validation(form));
 
@@ -77,8 +79,9 @@ export default function Signup() {
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/register`, form);
       e.target.reset();
       navigation("/login");
+      setLoading(false);
     } catch (error) {
-      console.log("error:", error.response.data.msg);
+      setLoading(false);
       setRegisterErrors(error.response.data.msg);
     }
   };
@@ -180,6 +183,7 @@ export default function Signup() {
                   }}
                   bg={"blue.400"}
                   color={"white"}
+                  isLoading={loading}
                   loadingText="Submitting"
                   size="lg"
                   type="submit"

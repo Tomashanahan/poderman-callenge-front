@@ -20,7 +20,9 @@ function UserHome() {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }).then((res) => setAllUserVisitsInfo(res.data));
+    }).then((res) => {
+      setAllUserVisitsInfo(res.data);
+    });
   };
 
   useEffect(() => {
@@ -145,6 +147,7 @@ function UserHome() {
                 <Select
                   placeholder="Selecciona un campo a completar"
                   textTransform="capitalize"
+                  value={formSelected}
                   onChange={(e) => {
                     setformSelected(e.target.value);
                   }}

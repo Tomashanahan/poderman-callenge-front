@@ -5,9 +5,8 @@ import Swal from "sweetalert2";
 
 import FormSelectOption from "../Commons/FormSelectOption";
 
-const token = JSON.parse(localStorage.getItem("token"));
-
 function Camaras({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
+  const token = JSON.parse(localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState("");
   const [formData, setFormData] = useState({
@@ -45,7 +44,6 @@ function Camaras({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
         if (result.isConfirmed) {
           setLoading(true);
           if (thisIsAFormToEdit) {
-            console.log("result:", result);
             await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/camaras`, formData, {
               headers: {
                 Authorization: `Bearer ${token}`,
