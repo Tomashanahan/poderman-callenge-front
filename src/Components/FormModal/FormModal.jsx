@@ -51,7 +51,7 @@ function FormModal({getAllVisitedInfo, formToShow, clouseModal, thisIsAFormToEdi
       ),
       title: "Casa Principal",
     },
-    exAgroinsumos: {
+    exAgroinsumo: {
       component: (
         <ExAgroinsumos
           clouseModal={clouseModal}
@@ -71,7 +71,7 @@ function FormModal({getAllVisitedInfo, formToShow, clouseModal, thisIsAFormToEdi
       ),
       title: "Hangar",
     },
-    oficina: {
+    hangarOficina: {
       component: (
         <Oficina
           clouseModal={clouseModal}
@@ -95,11 +95,12 @@ function FormModal({getAllVisitedInfo, formToShow, clouseModal, thisIsAFormToEdi
 
   return (
     <Box
-      bg="#FFFF"
+      bg="#FFF"
       borderRadius="8px"
       boxShadow="-webkit-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       -moz-box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);
       box-shadow: 8px 8px 24px 0px rgba(148, 148, 156, 1);"
+      color="black"
       h="-webkit-fit-content"
       left="50%"
       overflowY="scroll"
@@ -121,7 +122,7 @@ function FormModal({getAllVisitedInfo, formToShow, clouseModal, thisIsAFormToEdi
       >
         X
       </Button>
-      <Text fontSize="30px" fontWeight="bold">
+      <Text color="black" fontSize="30px" fontWeight="bold">
         {FormTitles[formToShow]?.title}
       </Text>
       {FormTitles[formToShow]?.component}

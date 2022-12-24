@@ -1,13 +1,7 @@
 import {Box, Flex, Image} from "@chakra-ui/react";
 import {AiFillEdit} from "react-icons/ai";
 
-function ShowImageInEditForm({
-  formData,
-  editImage,
-  setEditImage,
-  keyNameToSetTheState,
-  subKeyNameToSetTheState,
-}) {
+function ShowImageInEditForm({formData, editImage, setEditImage, keyNameToSetTheState}) {
   return (
     <Flex align="center" justify="space-between" mx="10px">
       <Image
@@ -15,9 +9,7 @@ function ShowImageInEditForm({
         h="100px"
         objectFit="contain"
         src={`${
-          formData[keyNameToSetTheState][subKeyNameToSetTheState] !== undefined
-            ? formData[keyNameToSetTheState][subKeyNameToSetTheState]
-            : ""
+          formData[keyNameToSetTheState] !== undefined ? formData[keyNameToSetTheState] : ""
         }`}
         w="100px"
       />
@@ -25,8 +17,7 @@ function ShowImageInEditForm({
         cursor="pointer"
         fontSize="20px"
         onClick={() => {
-          console.log("holaa");
-          setEditImage({...editImage, [subKeyNameToSetTheState]: true});
+          setEditImage({...editImage, [keyNameToSetTheState]: true});
         }}
       >
         <AiFillEdit />

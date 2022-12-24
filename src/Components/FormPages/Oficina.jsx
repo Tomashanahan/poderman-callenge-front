@@ -13,35 +13,33 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
   const [loading, setLoading] = useState(false);
   const [filestToTransform, setFilestToTransform] = useState({Oficina: {}});
   const [formErrors, setFormErrors] = useState("");
+  const [idForUpdate, setIdForUpdate] = useState();
   const [editImage, setEditImage] = useState({
     FuncionamientoTelefono: false,
     LimpiarPC: false,
   });
 
   const [formData, setFormData] = useState({
-    Oficina: {
-      AcomodarCables: "",
-      FuncionamientoTelefono: "",
-      LimpiarPC: "",
-    },
+    AcomodarCables: "",
+    FuncionamientoTelefono: "",
+    LimpiarPC: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/hangar-oficina`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
+          setIdForUpdate(res.data.hangarOficina.preference_id);
           setFormData({
-            Oficina: {
-              AcomodarCables: res.data.oficina.AcomodarCables,
-              FuncionamientoTelefono: res.data.oficina.FuncionamientoTelefono,
-              LimpiarPC: res.data.oficina.LimpiarPC,
-            },
+            AcomodarCables: res.data.hangarOficina.AcomodarCables,
+            FuncionamientoTelefono: res.data.hangarOficina.FuncionamientoTelefono,
+            LimpiarPC: res.data.hangarOficina.LimpiarPC,
           });
         });
     }
@@ -70,10 +68,7 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
         stateFormCopy = {
           ...stateFormCopy,
-          [key]: {
-            ...stateFormCopy[key],
-            [subKey]: cloudinaryResponse.data.secure_url,
-          },
+          [subKey]: cloudinaryResponse.data.secure_url,
         };
       }
     }
@@ -97,15 +92,8 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           let result = await apploadImage();
 
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/oficina`, result, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=oficina`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/hangar-oficina/${idForUpdate}`,
               result,
               {
                 headers: {
@@ -114,13 +102,18 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/hangar-oficina`, result, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
           setFormData({
-            Oficina: {
-              AcomodarCables: "",
-              FuncionamientoTelefono: "",
-              LimpiarPC: "",
-            },
+            AcomodarCables: "",
+            FuncionamientoTelefono: "",
+            LimpiarPC: "",
           });
           setLoading(false);
 
@@ -148,9 +141,8 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Oficina"
+            keyNameToSetTheState="FuncionamientoTelefono"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="FuncionamientoTelefono"
           />
         ) : (
           <EditImageFileForm
@@ -175,9 +167,8 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Oficina"
+            keyNameToSetTheState="LimpiarPC"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="LimpiarPC"
           />
         ) : (
           <EditImageFileForm
@@ -202,9 +193,8 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Oficina"
+            keyNameToSetTheState="AcomodarCables"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="AcomodarCables"
           />
         ) : (
           <EditImageFileForm
@@ -223,6 +213,7 @@ function Oficina({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

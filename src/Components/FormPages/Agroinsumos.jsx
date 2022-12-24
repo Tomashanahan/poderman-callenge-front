@@ -9,33 +9,29 @@ function Agroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
   const token = JSON.parse(localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState("");
+  const [agroinsumoIdToUpdate, setAgroinsumoIdToUpdate] = useState();
   const [formData, setFormData] = useState({
-    Agroinsumos: {
-      FuncionamientoAP: "",
-    },
+    FuncionamientoAP: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/agroinsumos`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
-          setFormData({
-            Agroinsumos: {
-              FuncionamientoAP: res.data.agroinsumos.FuncionamientoAP,
-            },
-          });
+          setAgroinsumoIdToUpdate(res.data.agroinsumos.preference_id);
+          setFormData({FuncionamientoAP: res.data.agroinsumos.FuncionamientoAP});
         });
     }
   }, []);
 
   const handleSubmit = async () => {
-    if (formData.Agroinsumos.FuncionamientoAP !== "") {
+    if (formData.FuncionamientoAP !== "") {
       Swal.fire({
         confirmButtonText: "Save",
         showCancelButton: true,
@@ -44,15 +40,8 @@ function Agroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
         if (result.isConfirmed) {
           setLoading(true);
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/agroinsumos`, formData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=agroinsumos`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/agroinsumos/${agroinsumoIdToUpdate}`,
               formData,
               {
                 headers: {
@@ -61,6 +50,13 @@ function Agroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/agroinsumos`, formData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
           setFormData({
             Agroinsumos: {
@@ -84,18 +80,18 @@ function Agroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
   return (
     <Box>
-      <FormLabel fontWeight="bold" mt="20px">
+      <FormLabel color="black" fontWeight="bold" mt="20px">
         Funcionamiento AP
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Agroinsumos"
-        formDataSubKeyName="FuncionamientoAP"
+        formDataKeyName="FuncionamientoAP"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

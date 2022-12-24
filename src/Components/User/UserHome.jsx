@@ -14,7 +14,7 @@ function UserHome() {
   const [showModal, setShowModal] = useState(false);
 
   const getAllVisitedInfo = () => {
-    axios(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+    axios(`${process.env.REACT_APP_BACKEND_URL}/auth/user-form`, {
       body: user,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -31,7 +31,7 @@ function UserHome() {
 
   const FieldRender = (visitInfo) => {
     return Object.entries(visitInfo.visitInfo).map(([key, value]) => {
-      if (["createdAt", "id", "preference_id", "updatedAt", "UserId"].includes(key)) {
+      if (["id", "preference_id", "updated_at", "UserId", "user"].includes(key)) {
         return <></>;
       }
 
@@ -107,10 +107,10 @@ function UserHome() {
   const calcValuesToComplete = () => {
     let allNecessaryInfo = [
       "casaPrincipal",
-      "exAgroinsumos",
+      "exAgroinsumo",
       "taller",
       "hangar",
-      "oficina",
+      "hangarOficina",
       "balanza",
       "agroinsumos",
       "camaras",

@@ -21,36 +21,34 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
     RackPrincipalLimpieza: false,
     RackPrincipalOrden: false,
   });
+  const [idForUpdate, setIdForUpdate] = useState();
   const [formData, setFormData] = useState({
-    Balanza: {
-      FuncionamientoAP: "",
-      FuncionamientoTelefono: "",
-      LimpiarPC: "",
-      RackPrincipalLimpieza: "",
-      RackPrincipalOrden: "",
-      UPS: "",
-    },
+    FuncionamientoAP: "",
+    FuncionamientoTelefono: "",
+    LimpiarPC: "",
+    RackPrincipalLimpieza: "",
+    RackPrincipalOrden: "",
+    UPS: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/balanza`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
+          setIdForUpdate(res.data.balanza.preference_id);
           setFormData({
-            Balanza: {
-              FuncionamientoAP: res.data.balanza.FuncionamientoAP,
-              FuncionamientoTelefono: res.data.balanza.FuncionamientoTelefono,
-              LimpiarPC: res.data.balanza.LimpiarPC,
-              RackPrincipalLimpieza: res.data.balanza.RackPrincipalLimpieza,
-              RackPrincipalOrden: res.data.balanza.RackPrincipalOrden,
-              UPS: res.data.balanza.UPS,
-            },
+            FuncionamientoAP: res.data.balanza.FuncionamientoAP,
+            FuncionamientoTelefono: res.data.balanza.FuncionamientoTelefono,
+            LimpiarPC: res.data.balanza.LimpiarPC,
+            RackPrincipalLimpieza: res.data.balanza.RackPrincipalLimpieza,
+            RackPrincipalOrden: res.data.balanza.RackPrincipalOrden,
+            UPS: res.data.balanza.UPS,
           });
         });
     }
@@ -79,10 +77,7 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
         stateFormCopy = {
           ...stateFormCopy,
-          [key]: {
-            ...stateFormCopy[key],
-            [subKey]: cloudinaryResponse.data.secure_url,
-          },
+          [subKey]: cloudinaryResponse.data.secure_url,
         };
       }
     }
@@ -97,9 +92,9 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
     if (
       checkingIfIsInEditMode &&
-      formData.Balanza.FuncionamientoAP !== "" &&
-      formData.Balanza.FuncionamientoTelefono !== "" &&
-      formData.Balanza.UPS !== ""
+      formData.FuncionamientoAP !== "" &&
+      formData.FuncionamientoTelefono !== "" &&
+      formData.UPS !== ""
     ) {
       Swal.fire({
         confirmButtonText: "Save",
@@ -111,15 +106,8 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           let result = await apploadImage();
 
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/balanza`, result, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=balanza`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/balanza/${idForUpdate}`,
               result,
               {
                 headers: {
@@ -128,17 +116,22 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/balanza`, result, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
 
           setFormData({
-            Balanza: {
-              FuncionamientoAP: "",
-              FuncionamientoTelefono: "",
-              LimpiarPC: "",
-              RackPrincipalLimpieza: "",
-              RackPrincipalOrden: "",
-              UPS: "",
-            },
+            FuncionamientoAP: "",
+            FuncionamientoTelefono: "",
+            LimpiarPC: "",
+            RackPrincipalLimpieza: "",
+            RackPrincipalOrden: "",
+            UPS: "",
           });
           setLoading(false);
           getAllVisitedInfo();
@@ -165,9 +158,8 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Balanza"
+            keyNameToSetTheState="RackPrincipalLimpieza"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalLimpieza"
           />
         ) : (
           <EditImageFileForm
@@ -192,9 +184,8 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Balanza"
+            keyNameToSetTheState="RackPrincipalOrden"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalOrden"
           />
         ) : (
           <EditImageFileForm
@@ -219,9 +210,8 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Balanza"
+            keyNameToSetTheState="LimpiarPC"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="LimpiarPC"
           />
         ) : (
           <EditImageFileForm
@@ -243,8 +233,7 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Balanza"
-        formDataSubKeyName="FuncionamientoAP"
+        formDataKeyName="FuncionamientoAP"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
@@ -253,8 +242,7 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Balanza"
-        formDataSubKeyName="FuncionamientoTelefono"
+        formDataKeyName="FuncionamientoTelefono"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
@@ -263,13 +251,13 @@ function Balanza({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Balanza"
-        formDataSubKeyName="UPS"
+        formDataKeyName="UPS"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

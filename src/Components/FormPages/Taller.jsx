@@ -12,38 +12,37 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
   const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.signature;
   const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.timestamp;
   const [loading, setLoading] = useState(false);
-  const [filestToTransform, setFilestToTransform] = useState({Taller: {}});
+  const [filestToTransform, setFilestToTransform] = useState({});
   const [formErrors, setFormErrors] = useState("");
+
   const [editImage, setEditImage] = useState({
     RackPrincipalLimpieza: false,
     RackPrincipalOrden: false,
   });
+  const [idForUpdate, setIdForUpdate] = useState();
   const [formData, setFormData] = useState({
-    Taller: {
-      FuncionamientoAP: "",
-      FuncionamientoTelefono: "",
-      RackPrincipalLimpieza: "",
-      RackPrincipalOrden: "",
-    },
+    FuncionamientoAP: "",
+    FuncionamientoTelefono: "",
+    RackPrincipalLimpieza: "",
+    RackPrincipalOrden: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/taller`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
+          setIdForUpdate(res.data.taller.preference_id);
           setFormData({
-            Taller: {
-              FuncionamientoAP: res.data.taller.FuncionamientoAP,
-              FuncionamientoTelefono: res.data.taller.FuncionamientoTelefono,
-              RackPrincipalLimpieza: res.data.taller.RackPrincipalLimpieza,
-              RackPrincipalOrden: res.data.taller.RackPrincipalOrden,
-            },
+            FuncionamientoAP: res.data.taller.FuncionamientoAP,
+            FuncionamientoTelefono: res.data.taller.FuncionamientoTelefono,
+            RackPrincipalLimpieza: res.data.taller.RackPrincipalLimpieza,
+            RackPrincipalOrden: res.data.taller.RackPrincipalOrden,
           });
         });
     }
@@ -72,10 +71,7 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
         stateFormCopy = {
           ...stateFormCopy,
-          [key]: {
-            ...stateFormCopy[key],
-            [subKey]: cloudinaryResponse.data.secure_url,
-          },
+          [subKey]: cloudinaryResponse.data.secure_url,
         };
       }
     }
@@ -90,8 +86,8 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
     if (
       checkingIfIsInEditMode &&
-      formData.Taller.FuncionamientoAP !== "" &&
-      formData.Taller.FuncionamientoTelefono !== ""
+      formData.FuncionamientoAP !== "" &&
+      formData.FuncionamientoTelefono !== ""
     ) {
       Swal.fire({
         confirmButtonText: "Save",
@@ -103,15 +99,8 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           let result = await apploadImage();
 
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/taller`, result, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=taller`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/taller/${idForUpdate}`,
               result,
               {
                 headers: {
@@ -120,14 +109,15 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/taller`, result, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
-          setFormData({
-            Oficina: {
-              AcomodarCables: "",
-              FuncionamientoTelefono: "",
-              LimpiarPC: "",
-            },
-          });
+
           setLoading(false);
           getAllVisitedInfo();
           clouseModal(false);
@@ -152,9 +142,8 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Taller"
+            keyNameToSetTheState="RackPrincipalLimpieza"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalLimpieza"
           />
         ) : (
           <EditImageFileForm
@@ -179,9 +168,8 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Taller"
+            keyNameToSetTheState="RackPrincipalOrden"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalOrden"
           />
         ) : (
           <EditImageFileForm
@@ -202,8 +190,7 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Taller"
-        formDataSubKeyName="FuncionamientoAP"
+        formDataKeyName="FuncionamientoAP"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
@@ -212,13 +199,13 @@ function Taller({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Taller"
-        formDataSubKeyName="FuncionamientoTelefono"
+        formDataKeyName="FuncionamientoTelefono"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

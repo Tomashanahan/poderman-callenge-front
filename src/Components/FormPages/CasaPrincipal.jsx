@@ -15,42 +15,38 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState("");
-  const [filestToTransform, setFilestToTransform] = useState({
-    CasaPrincipal: {},
-  });
+  const [idForUpdate, setIdForUpdate] = useState();
+  const [filestToTransform, setFilestToTransform] = useState({});
   const [editImage, setEditImage] = useState({
     RackPrincipalLimpieza: false,
     RackPrincipalOrden: false,
   });
 
   const [formData, setFormData] = useState({
-    CasaPrincipal: {
-      FuncionamientoAP: "",
-      FuncionamientoTelefono: "",
-      RackPrincipalLimpieza: "",
-      RackPrincipalOrden: "",
-      UPS: "",
-    },
+    FuncionamientoAP: "",
+    FuncionamientoTelefono: "",
+    RackPrincipalLimpieza: "",
+    RackPrincipalOrden: "",
+    UPS: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/casa-principal`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
+          setIdForUpdate(res.data.casaPrincipal.preference_id);
           setFormData({
-            CasaPrincipal: {
-              FuncionamientoAP: res.data.casaPrincipal.FuncionamientoAP,
-              FuncionamientoTelefono: res.data.casaPrincipal.FuncionamientoTelefono,
-              RackPrincipalLimpieza: res.data.casaPrincipal.RackPrincipalLimpieza,
-              RackPrincipalOrden: res.data.casaPrincipal.RackPrincipalOrden,
-              UPS: res.data.casaPrincipal.UPS,
-            },
+            FuncionamientoAP: res.data.casaPrincipal.FuncionamientoAP,
+            FuncionamientoTelefono: res.data.casaPrincipal.FuncionamientoTelefono,
+            RackPrincipalLimpieza: res.data.casaPrincipal.RackPrincipalLimpieza,
+            RackPrincipalOrden: res.data.casaPrincipal.RackPrincipalOrden,
+            UPS: res.data.casaPrincipal.UPS,
           });
         });
     }
@@ -79,10 +75,7 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
         stateFormCopy = {
           ...stateFormCopy,
-          [key]: {
-            ...stateFormCopy[key],
-            [subKey]: cloudinaryResponse.data.secure_url,
-          },
+          [subKey]: cloudinaryResponse.data.secure_url,
         };
       }
     }
@@ -97,9 +90,9 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
     if (
       checkingIfIsInEditMode &&
-      formData.CasaPrincipal.FuncionamientoAP !== "" &&
-      formData.CasaPrincipal.FuncionamientoTelefono !== "" &&
-      formData.CasaPrincipal.UPS !== ""
+      formData.FuncionamientoAP !== "" &&
+      formData.FuncionamientoTelefono !== "" &&
+      formData.UPS !== ""
     ) {
       Swal.fire({
         confirmButtonText: "Save",
@@ -111,15 +104,8 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           let result = await apploadImage();
 
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/casaprincipal`, result, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=casaPrincipal`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/casa-principal/${idForUpdate}`,
               result,
               {
                 headers: {
@@ -128,15 +114,20 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/casa-principal`, result, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
           setFormData({
-            CasaPrincipal: {
-              FuncionamientoAP: "",
-              FuncionamientoTelefono: "",
-              RackPrincipalLimpieza: "",
-              RackPrincipalOrden: "",
-              UPS: "",
-            },
+            FuncionamientoAP: "",
+            FuncionamientoTelefono: "",
+            RackPrincipalLimpieza: "",
+            RackPrincipalOrden: "",
+            UPS: "",
           });
           setLoading(false);
           await getAllVisitedInfo();
@@ -163,9 +154,8 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="CasaPrincipal"
+            keyNameToSetTheState="RackPrincipalLimpieza"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalLimpieza"
           />
         ) : (
           <EditImageFileForm
@@ -189,22 +179,19 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="CasaPrincipal"
+            keyNameToSetTheState="RackPrincipalOrden"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalOrden"
           />
         ) : (
           <EditImageFileForm
-            keyNameToSetTheState="CasaPrincipal"
+            keyNameToSetTheState="RackPrincipalOrden"
             setFilestToTransform={setFilestToTransform}
-            subKeyNameToSetTheState="RackPrincipalOrden"
           />
         )
       ) : (
         <EditImageFileForm
-          keyNameToSetTheState="CasaPrincipal"
+          keyNameToSetTheState="RackPrincipalOrden"
           setFilestToTransform={setFilestToTransform}
-          subKeyNameToSetTheState="RackPrincipalOrden"
         />
       )}
       <FormLabel fontWeight="bold" mt="20px">
@@ -212,8 +199,7 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="CasaPrincipal"
-        formDataSubKeyName="FuncionamientoAP"
+        formDataKeyName="FuncionamientoAP"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
@@ -222,8 +208,7 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="CasaPrincipal"
-        formDataSubKeyName="FuncionamientoTelefono"
+        formDataKeyName="FuncionamientoTelefono"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
@@ -232,13 +217,13 @@ function CasaPrincipal({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="CasaPrincipal"
-        formDataSubKeyName="UPS"
+        formDataKeyName="UPS"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

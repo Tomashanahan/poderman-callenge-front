@@ -9,33 +9,31 @@ function Camaras({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
   const token = JSON.parse(localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState("");
+  const [idForUpdate, setIdForUpdate] = useState();
   const [formData, setFormData] = useState({
-    Camaras: {
-      ChequearVisualizacion: "",
-    },
+    ChequearVisualizacion: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/camaras`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
+          setIdForUpdate(res.data.camaras.preference_id);
           setFormData({
-            Camaras: {
-              ChequearVisualizacion: res.data.camaras.ChequearVisualizacion,
-            },
+            ChequearVisualizacion: res.data.camaras.ChequearVisualizacion,
           });
         });
     }
   }, []);
 
   const handleSubmit = async () => {
-    if (formData.Camaras.ChequearVisualizacion !== "") {
+    if (formData.ChequearVisualizacion !== "") {
       Swal.fire({
         confirmButtonText: "Save",
         showCancelButton: true,
@@ -44,15 +42,8 @@ function Camaras({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
         if (result.isConfirmed) {
           setLoading(true);
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/camaras`, formData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=camaras`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/camaras/${idForUpdate}`,
               formData,
               {
                 headers: {
@@ -61,6 +52,13 @@ function Camaras({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/camaras`, formData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
 
           setLoading(false);
@@ -85,13 +83,13 @@ function Camaras({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Camaras"
-        formDataSubKeyName="ChequearVisualizacion"
+        formDataKeyName="ChequearVisualizacion"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

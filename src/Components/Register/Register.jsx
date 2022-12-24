@@ -76,13 +76,15 @@ export default function Signup() {
     setErrors(validation(form));
 
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/register`, form);
+      if (!Object.values(errors).length > 0) throw new Error();
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, form);
+
       e.target.reset();
       navigation("/login");
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      setRegisterErrors(error.response.data.msg);
+      setRegisterErrors(error.response.data.message || errors);
     }
   };
   const handleChange = (e) => {

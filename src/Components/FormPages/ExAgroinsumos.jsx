@@ -12,6 +12,7 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
   const signature = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.signature;
   const timestamp = JSON.parse(localStorage.getItem("userInfo"))?.cloudinaryInfo?.timestamp;
   const [loading, setLoading] = useState(false);
+  const [idForUpdate, setIdForUpdate] = useState();
   const [formErrors, setFormErrors] = useState("");
   const [filestToTransform, setFilestToTransform] = useState({
     ExAgroinsumos: {},
@@ -22,29 +23,26 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
   });
 
   const [formData, setFormData] = useState({
-    ExAgroinsumos: {
-      FuncionamientoAP: "",
-      RackPrincipalLimpieza: "",
-      RackPrincipalOrden: "",
-    },
+    FuncionamientoAP: "",
+    RackPrincipalLimpieza: "",
+    RackPrincipalOrden: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/ex-agroinsumos`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
+          setIdForUpdate(res.data.exAgroinsumo.preference_id);
           setFormData({
-            ExAgroinsumos: {
-              FuncionamientoAP: res.data.exAgroinsumos.FuncionamientoAP,
-              RackPrincipalLimpieza: res.data.exAgroinsumos.RackPrincipalLimpieza,
-              RackPrincipalOrden: res.data.exAgroinsumos.RackPrincipalOrden,
-            },
+            FuncionamientoAP: res.data.exAgroinsumo.FuncionamientoAP,
+            RackPrincipalLimpieza: res.data.exAgroinsumo.RackPrincipalLimpieza,
+            RackPrincipalOrden: res.data.exAgroinsumo.RackPrincipalOrden,
           });
         });
     }
@@ -73,10 +71,7 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
         stateFormCopy = {
           ...stateFormCopy,
-          [key]: {
-            ...stateFormCopy[key],
-            [subKey]: cloudinaryResponse.data.secure_url,
-          },
+          [subKey]: cloudinaryResponse.data.secure_url,
         };
       }
     }
@@ -89,7 +84,7 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       ? Object.values(filestToTransform.ExAgroinsumos).length === 2
       : true;
 
-    if (checkingIfIsInEditMode && formData.ExAgroinsumos.FuncionamientoAP !== "") {
+    if (checkingIfIsInEditMode && formData.FuncionamientoAP !== "") {
       Swal.fire({
         confirmButtonText: "Save",
         showCancelButton: true,
@@ -100,15 +95,8 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           let result = await apploadImage();
 
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/exAgroinsumos`, result, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=exAgroinsumos`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/ex-agroinsumos/${idForUpdate}`,
               result,
               {
                 headers: {
@@ -117,14 +105,19 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/ex-agroinsumos`, result, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
 
           setFormData({
-            ExAgroinsumos: {
-              FuncionamientoAP: "",
-              RackPrincipalLimpieza: "",
-              RackPrincipalOrden: "",
-            },
+            FuncionamientoAP: "",
+            RackPrincipalLimpieza: "",
+            RackPrincipalOrden: "",
           });
           setLoading(false);
           getAllVisitedInfo();
@@ -151,9 +144,8 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="ExAgroinsumos"
+            keyNameToSetTheState="RackPrincipalLimpieza"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalLimpieza"
           />
         ) : (
           <EditImageFileForm
@@ -178,9 +170,8 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="ExAgroinsumos"
+            keyNameToSetTheState="RackPrincipalOrden"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalOrden"
           />
         ) : (
           <EditImageFileForm
@@ -202,13 +193,13 @@ function ExAgroinsumos({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="ExAgroinsumos"
-        formDataSubKeyName="FuncionamientoAP"
+        formDataKeyName="FuncionamientoAP"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

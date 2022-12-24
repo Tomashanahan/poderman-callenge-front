@@ -111,7 +111,7 @@ function AdminDashboard() {
         </TableContainer>
       )}
 
-      {data?.exAgroinsumos?.length > 0 && (
+      {data?.exAgroinsumo?.length > 0 && (
         <TableContainer m="auto" my="20px" w="80%">
           <Box fontWeight="extrabold" mt="20px">
             Ex Agroinsumos
@@ -121,10 +121,10 @@ function AdminDashboard() {
             <Thead>
               <Tr>
                 <Th>User</Th>
-                {mapAllColumnsNames(data.exAgroinsumos)}
+                {mapAllColumnsNames(data.exAgroinsumo)}
               </Tr>
             </Thead>
-            <Tbody justifyContent="center">{mapAllRowValues(data.exAgroinsumos)}</Tbody>
+            <Tbody justifyContent="center">{mapAllRowValues(data.exAgroinsumo)}</Tbody>
           </Table>
         </TableContainer>
       )}

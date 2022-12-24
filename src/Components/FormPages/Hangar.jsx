@@ -18,32 +18,30 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
     RackPrincipalLimpieza: false,
     RackPrincipalOrden: false,
   });
+  const [idForUpdate, setIdForUpdate] = useState();
   const [formData, setFormData] = useState({
-    Hangar: {
-      FuncionamientoAP: "",
-      FuncionamientoTelefono: "",
-      RackPrincipalLimpieza: "",
-      RackPrincipalOrden: "",
-    },
+    FuncionamientoAP: "",
+    FuncionamientoTelefono: "",
+    RackPrincipalLimpieza: "",
+    RackPrincipalOrden: "",
   });
 
   useEffect(() => {
     if (thisIsAFormToEdit) {
       axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/userForm`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/hangar`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
         .then((res) => {
+          setIdForUpdate(res.data.hangar.preference_id);
           setFormData({
-            Hangar: {
-              FuncionamientoAP: res.data.hangar.FuncionamientoAP,
-              FuncionamientoTelefono: res.data.hangar.FuncionamientoTelefono,
-              RackPrincipalLimpieza: res.data.hangar.RackPrincipalLimpieza,
-              RackPrincipalOrden: res.data.hangar.RackPrincipalOrden,
-            },
+            FuncionamientoAP: res.data.hangar.FuncionamientoAP,
+            FuncionamientoTelefono: res.data.hangar.FuncionamientoTelefono,
+            RackPrincipalLimpieza: res.data.hangar.RackPrincipalLimpieza,
+            RackPrincipalOrden: res.data.hangar.RackPrincipalOrden,
           });
         });
     }
@@ -72,10 +70,7 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
         stateFormCopy = {
           ...stateFormCopy,
-          [key]: {
-            ...stateFormCopy[key],
-            [subKey]: cloudinaryResponse.data.secure_url,
-          },
+          [subKey]: cloudinaryResponse.data.secure_url,
         };
       }
     }
@@ -90,8 +85,8 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
 
     if (
       checkingIfIsInEditMode &&
-      formData.Hangar.FuncionamientoTelefono !== "" &&
-      formData.Hangar.FuncionamientoAP !== ""
+      formData.FuncionamientoTelefono !== "" &&
+      formData.FuncionamientoAP !== ""
     ) {
       Swal.fire({
         confirmButtonText: "Save",
@@ -103,15 +98,8 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           let result = await apploadImage();
 
           if (thisIsAFormToEdit) {
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/userForm/hangar`, result, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          } else {
-            await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/userForm/form?typeOfCategory=hangar`,
+            await axios.patch(
+              `${process.env.REACT_APP_BACKEND_URL}/hangar/${idForUpdate}`,
               result,
               {
                 headers: {
@@ -120,15 +108,20 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
                 },
               },
             );
+          } else {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/hangar`, result, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
           }
 
           setFormData({
-            Hangar: {
-              FuncionamientoAP: "",
-              FuncionamientoTelefono: "",
-              RackPrincipalLimpieza: "",
-              RackPrincipalOrden: "",
-            },
+            FuncionamientoAP: "",
+            FuncionamientoTelefono: "",
+            RackPrincipalLimpieza: "",
+            RackPrincipalOrden: "",
           });
           setLoading(false);
           getAllVisitedInfo();
@@ -154,9 +147,8 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Hangar"
+            keyNameToSetTheState="RackPrincipalLimpieza"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalLimpieza"
           />
         ) : (
           <EditImageFileForm
@@ -181,9 +173,8 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
           <ShowImageInEditForm
             editImage={editImage}
             formData={formData}
-            keyNameToSetTheState="Hangar"
+            keyNameToSetTheState="RackPrincipalOrden"
             setEditImage={setEditImage}
-            subKeyNameToSetTheState="RackPrincipalOrden"
           />
         ) : (
           <EditImageFileForm
@@ -205,8 +196,7 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Hangar"
-        formDataSubKeyName="FuncionamientoAP"
+        formDataKeyName="FuncionamientoAP"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
@@ -216,13 +206,13 @@ function Hangar({thisIsAFormToEdit, getAllVisitedInfo, clouseModal}) {
       </FormLabel>
       <FormSelectOption
         formData={formData}
-        formDataKeyName="Hangar"
-        formDataSubKeyName="FuncionamientoTelefono"
+        formDataKeyName="FuncionamientoTelefono"
         setFormData={setFormData}
         setFormErrors={setFormErrors}
       />
       <Flex align="center" gap="20px" mt="30px">
         <Button
+          _hover={{bg: "blue.400"}}
           bg="blue.400"
           color="white"
           disabled={formErrors !== "" ? true : false}

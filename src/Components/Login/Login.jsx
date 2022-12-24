@@ -31,7 +31,7 @@ export default function Login() {
         setErrors("Complete todos los campos por favor");
       else {
         setErrors("");
-        const info = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`, {
+        const info = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
           email: inputValues.email,
           password: inputValues.password,
         });
@@ -44,7 +44,7 @@ export default function Login() {
         } else if (
           info.data.team === "Microinformatica" ||
           info.data.team === "Telecomunicaciones" ||
-          info.data.rol === "User"
+          info.data.rol.includes("user")
         ) {
           navigation("/user");
         }
@@ -52,7 +52,7 @@ export default function Login() {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      setErrors(error.response.data.msg);
+      setErrors(error.response.data.message);
     }
   };
 
